@@ -57,7 +57,7 @@ function Header() {
               {session.user?.email}
             </button>
             {dropdownOpen && (
-              <div className="absolute right-0 z-10 mt-2 w-48 bg-white border rounded shadow-lg">
+              <div className="absolute right-0 z-10 mt-2 w-48 bg-blanco border rounded shadow-lg">
                 <div className="py-2">
                   {user_type === "arrendador" ? (
                     <a href="/dashboard" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-200">

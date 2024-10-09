@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch"
 import { useRouter } from "next/navigation";
 import { MapPin, Users, DollarSign, Image } from "lucide-react"
 import { supabase } from "@/app/lib/supabase";
+import { createCancha } from "@/app/lib/cancha";
 
 
 export function CrearCanchaComponent() {

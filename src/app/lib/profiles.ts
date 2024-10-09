@@ -5,8 +5,8 @@ import { supabase } from "./supabase";
 export const getUserProfile = async (userId: string) => {
   const { data, error } = await supabase
     .from("profiles")
-    .select("userType")
-    .eq("id", userId) // Asegúrate de que el ID coincide con el que tienes en tu tabla
+    .select("user_type")
+    .eq("id", userId) 
     .single();
 
   if (error) {

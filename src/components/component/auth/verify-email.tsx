@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { JSX, SVGProps } from "react";
-import { useAuth } from './auth/AuthProvider';
+import { useAuth } from './AuthProvider';
 
 export function VerifyEmail() {
   const [isSending, setIsSending] = useState(false);

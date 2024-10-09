@@ -1,38 +1,38 @@
 import { supabase } from "./supabase"; // Asegúrate de importar tu cliente Supabase
 
-export async function getModels() {
-  const { data, error } = await supabase.from("models").select("*");
+export async function getCanchas() {
+  const { data, error } = await supabase.from("canchas").select("*");
   if (error) throw error;
   return data;
 }
 
-export async function getModelById(modelId: number) {
+export async function getCanchaById(canchaId: number) {
   const { data, error } = await supabase
-    .from("models")
+    .from("canchas")
     .select("*")
-    .eq("id", modelId)
+    .eq("id", canchaId)
     .single();
   if (error) throw error;
   return data;
 }
 
-export async function createModel(modelData: any) {
-  const { data, error } = await supabase.from("models").insert([modelData]);
+export async function createCancha(canchaData: any) {
+  const { data, error } = await supabase.from("canchas").insert([canchaData]);
   if (error) throw error;
   return data;
 }
 
-export async function updateModel(modelId: number, updatedData: any) {
+export async function updateCancha(canchaId: number, updatedData: any) {
   const { data, error } = await supabase
-    .from("models")
+    .from("cancha")
     .update(updatedData)
-    .eq("id", modelId);
+    .eq("id", canchaId);
   if (error) throw error;
   return data;
 }
 
-export async function deleteModel(modelId: number) {
-  const { data, error } = await supabase.from("models").delete().eq("id", modelId);
+export async function deleteCancha(canchaId: number) {
+  const { data, error } = await supabase.from("cancha").delete().eq("id", canchaId);
   if (error) throw error;
   return data;
 }

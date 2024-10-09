@@ -66,9 +66,9 @@ export function RegisterPage() {
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <Input
-              name="usuario"
+              name="username"
               type="text"
-              placeholder="Usuario"
+              placeholder="Username"
               value={formData.username}
               onChange={handleChange}
               required

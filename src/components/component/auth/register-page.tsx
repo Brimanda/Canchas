@@ -10,7 +10,7 @@ import { useAuth } from "./AuthProvider";
 export function RegisterPage() {
   const { signUp } = useAuth();
   const [formData, setFormData] = useState({
-    usuario: "",
+    username: "",
     nombre: "",
     apellidos: "",
     email: "",
@@ -44,7 +44,7 @@ export function RegisterPage() {
       await signUp(
         formData.email,
         formData.password,
-        formData.usuario,
+        formData.username,
         formData.nombre,
         formData.apellidos,
         formData.userType
@@ -69,7 +69,7 @@ export function RegisterPage() {
               name="usuario"
               type="text"
               placeholder="Usuario"
-              value={formData.usuario}
+              value={formData.username}
               onChange={handleChange}
               required
             />

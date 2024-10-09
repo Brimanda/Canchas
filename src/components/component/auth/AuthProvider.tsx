@@ -8,7 +8,7 @@ interface AuthContextType {
   isLoading: boolean;
   userType: string | null; // Agregamos userType aquí
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, usuario: string, nombre: string, apellidos: string, userType: string) => Promise<void>;
+  signUp: (email: string, password: string, username: string, nombre: string, apellidos: string, userType: string) => Promise<void>;
   signOut: () => Promise<void>;
   resendVerificationEmail: () => Promise<void>; 
 }
@@ -54,18 +54,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (error) throw error;
   };
 
-  const signUp = async (email: string, password: string, usuario: string, nombre: string, apellidos: string, userType: string) => {
+  const signUp = async (email: string, password: string, username: string, nombre: string, apellidos: string, userType: string) => {
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) throw error;
 
-    const user = data.user; // Acceder al user correctamente
+    const user = data.user;
 
-    // Guardar los datos adicionales en la tabla profiles
+
     const { error: profileError } = await supabase
       .from('profiles')
       .insert([{ 
         id: user?.id, 
-        usuario, 
+        username, 
         nombre, 
         apellidos, 
         user_type: userType 

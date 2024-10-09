@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "./AuthProvider";
-import { supabase } from "@/app/lib/supabase"; // Asegúrate de importar supabase aquí
+import { supabase } from "@/app/lib/supabase";
 
 export function RegisterPage() {
   const { signUp } = useAuth();

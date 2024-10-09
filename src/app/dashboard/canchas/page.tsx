@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/component/auth/AuthProvider";
 import { CanchasDisponiblesComponent } from "@/components/component/dashboard/canchas/canchas-disponibles";
 
+
 export default function ConceptArtPage() {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isLinkHovered, setLinkHovered] = useState(false);

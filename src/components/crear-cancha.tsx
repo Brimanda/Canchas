@@ -77,8 +77,6 @@ export function CrearCanchaComponent() {
     } catch (error: any) {
       console.error("Error al crear la cancha:", error);
       setError(error.message || "Error al crear la cancha.");
-    } finally {
-      setIsLoading(false);
     }
   };
 

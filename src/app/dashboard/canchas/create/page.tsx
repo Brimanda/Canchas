@@ -22,7 +22,7 @@ import { useState, useEffect } from "react";
 import { JSX, SVGProps } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/component/auth/AuthProvider";
-import { CrearCanchaComponent } from "@/components/crear-cancha";
+import { CrearCanchaComponent } from "@/components/component/dashboard/canchas/crear-cancha";
 
 export default function ConceptArtPage() {
   const [isSidebarOpen, setSidebarOpen] = useState(false);

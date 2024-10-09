@@ -22,6 +22,7 @@ import { useState, useEffect } from "react";
 import { JSX, SVGProps } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/component/auth/AuthProvider";
+import { CanchasDisponiblesComponent } from "@/components/component/dashboard/canchas/canchas-disponibles";
 
 export default function ConceptArtPage() {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -192,6 +193,7 @@ export default function ConceptArtPage() {
           </DropdownMenu>
         </header>
         <main className="flex-1 p-4 sm:p-6">
+        <CanchasDisponiblesComponent/>
         </main>
       </div>
     </div>

@@ -15,7 +15,7 @@ import { useState, useEffect } from "react";
 import { JSX, SVGProps } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/component/auth/AuthProvider";
-import { EditarCanchaComponent } from "@/components/editar-cancha";
+import { EditarCanchaComponent } from "@/components/component/dashboard/canchas/editar-cancha";
 import { SidebarComponent } from "@/components/component/dashboard/sidebar";
 
 

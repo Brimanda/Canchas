@@ -31,13 +31,11 @@ export function CrearCanchaComponent() {
     setError(null);
 
     try {
-      // Validación de campos obligatorios
       if (!nombre || !tipo || !capacidad || !ubicacion || !precio) {
         setError("No haz llenado todos los campos correspondientes.");
         return;
       }
 
-      // Subir imágenes y videos (si hay)
       const imageUrls = await Promise.all(
         (imageFiles ? Array.from(imageFiles) : []).map(async (file) => {
           if (!file) {
@@ -67,7 +65,7 @@ export function CrearCanchaComponent() {
         ubicacion,
         precio, 
         disponibilidad,
-        images: imageUrls, 
+        imagen: imageUrls, 
         created_at: new Date().toISOString()
       };
 

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "./AuthProvider";
+import { supabase } from "@/app/lib/supabase"; // Asegúrate de importar supabase aquí
 
 export function RegisterPage() {
   const { signUp } = useAuth();
@@ -41,8 +42,33 @@ export function RegisterPage() {
     }
 
     try {
-      await signUp(formData.email, formData.password);
-      // Here you would typically also send the user type and other details to your backend
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (authError) {
+        throw authError;
+      }
+
+      const userId = authData.user?.id;
+
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert([
+          {
+            user_id: userId, 
+            username: formData.usuario,
+            nombre: formData.nombre,
+            apellidos: formData.apellidos,
+            user_type: formData.userType,
+          },
+        ]);
+
+      if (profileError) {
+        throw profileError;
+      }
+
       router.push("/auth/confirm");
     } catch (error: any) {
       setError(error.message);
@@ -154,31 +180,13 @@ export function RegisterPage() {
           <Link href="/auth/login" className="text-blue-600 hover:underline">
             Inicia sesión
           </Link>
+          <br />
+          <br />
+          <Link href="/" className="text-blue-600 hover:underline">
+            Ir al inicio
+          </Link>
         </div>
       </div>
     </div>
   );
-}
-
-function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <circle cx="12" cy="12" r="4" />
-      <line x1="21.17" x2="12" y1="8" y2="8" />
-      <line x1="3.95" x2="8.54" y1="6.06" y2="14" />
-      <line x1="10.88" x2="15.46" y1="21.94" y2="14" />
-    </svg>
-  )
 }

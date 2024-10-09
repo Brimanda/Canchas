@@ -15,7 +15,7 @@ import { useState, useEffect } from "react";
 import { JSX, SVGProps } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/component/auth/AuthProvider";
-import { EditarCanchaComponent } from "@/components/editar-cancha";
+import { EditCanchaComponent } from "@/components/component/dashboard/canchas/editar-cancha";
 
 
 export default function ConceptArtPage() {
@@ -183,7 +183,7 @@ export default function ConceptArtPage() {
           </DropdownMenu>
         </header>
         <main className="flex-1 p-4 sm:p-6">
-        <EditarCanchaComponent/>
+        <EditCanchaComponent/>
         </main>
       </div>
     </div>

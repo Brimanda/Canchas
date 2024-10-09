@@ -7,6 +7,7 @@ const nextConfig = {
           hostname: 'sdhopbvwmexqitualize.supabase.co', 
         },
       ],
+      
     },
   };
   

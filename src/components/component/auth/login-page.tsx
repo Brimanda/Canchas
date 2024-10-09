@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation"; 
 import { useAuth } from "./AuthProvider";
+import Link from "next/link";
 
 export function LoginPage() {
   const { signIn } = useAuth(); 
@@ -64,6 +65,17 @@ export function LoginPage() {
             </Button>
           </div>
         </form>
+        <div className="text-center text-sm">
+          ¿No tienes cuenta?{" "}
+          <Link href="/auth/register" className="text-blue-600 hover:underline">
+            Registrate
+          </Link>
+          <br />
+          <br />
+          <Link href="/" className="text-blue-600 hover:underline">
+            Ir al inicio
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -67,7 +67,7 @@ export function CanchasDisponiblesComponent() {
               <TableCell className="font-medium">{cancha.nombre}</TableCell>
               <TableCell>{cancha.tipo}</TableCell>
               <TableCell>
-                <Badge variant={cancha.disponibilidad ? "success" : "destructive"}>
+                <Badge variant={cancha.disponibilidad ? "default" : "destructive"}>
                   {cancha.disponibilidad ? "Disponible" : "No Disponible"}
                 </Badge>
               </TableCell>

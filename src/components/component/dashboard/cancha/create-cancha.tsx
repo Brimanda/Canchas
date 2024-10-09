@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { createModel } from "@/app/lib/models";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/supabase";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../../ui/card";
 import { StorageError } from "@supabase/storage-js";
 
 export function CreateModel() {

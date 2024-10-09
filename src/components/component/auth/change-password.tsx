@@ -21,7 +21,7 @@ export function ChangePassword() {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://portfolioweb-roan-alpha.vercel.app/auth/callback?type=recovery",
+        redirectTo: "https://sportrent.vercel.app/auth/callback?type=recovery",
       });
 
       if (error) {

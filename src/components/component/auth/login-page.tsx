@@ -20,7 +20,6 @@ export function LoginPage() {
     try {
       await signIn(email, password);
       
-      // Redireccionar según el tipo de usuario
       if (userType === "arrendador") {
         router.push("/dashboard");
       } else {
@@ -63,7 +62,7 @@ export function LoginPage() {
               required
             />
           </div>
-          {error && <p className="text-red-500">{error}</p>} {/* Muestra mensaje de error */}
+          {error && <p className="text-red-500">{error}</p>} 
 
           <div className="flex flex-col gap-2">
             <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90">

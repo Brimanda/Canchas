@@ -1,7 +1,13 @@
-import { JSX, SVGProps } from "react"
-
+import { JSX, SVGProps } from "react";
+import { useAuth } from "../auth/AuthProvider";
 
 function Header() {
+  const { session, signOut } = useAuth(); 
+
+  const handleLogout = async () => {
+    await signOut(); 
+  };
+
   return (
     <div>
       <header className="flex items-center justify-between p-4">
@@ -16,14 +22,26 @@ function Header() {
           />
         </div>
         <div className="flex items-center space-x-4">
-          <a href="/auth/login" className="flex items-center text-sm text-muted-foreground">
-            <LogInIcon className="mr-1" />
-            Inicio Sesión
-          </a>
-          <a href="/auth/register" className="flex items-center text-sm text-muted-foreground">
-            <UserIcon className="mr-1" />
-            Registrarse
-          </a>
+          {session ? ( 
+            <div className="flex items-center relative">
+              <UserIcon className="mr-1" />
+              <span className="text-sm text-muted-foreground">{session.user?.email}</span>
+              <button onClick={handleLogout} className="ml-2 text-sm text-muted-foreground">
+                Cerrar Sesión
+              </button>
+            </div>
+          ) : (
+            <>
+              <a href="/auth/login" className="flex items-center text-sm text-muted-foreground">
+                <LogInIcon className="mr-1" />
+                Inicio Sesión
+              </a>
+              <a href="/auth/register" className="flex items-center text-sm text-muted-foreground">
+                <UserIcon className="mr-1" />
+                Registrarse
+              </a>
+            </>
+          )}
           <a href="#" className="flex items-center text-sm text-muted-foreground">
             <ShoppingCartIcon className="mr-1" />
             (0)
@@ -31,8 +49,9 @@ function Header() {
         </div>
       </header>
     </div>
-  )
+  );
 }
+
 function NavBar() {
   return (
     <div id="header">
@@ -53,17 +72,19 @@ function NavBar() {
         </div>
       </nav>
     </div>
-  )
+  );
 }
+
 export function HeaderComponent() {
   return (
     <div>
       <Header />
       <NavBar />
     </div>
-  )
+  );
 }
 
+// Íconos
 function LogInIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -82,9 +103,8 @@ function LogInIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
       <polyline points="10 17 15 12 10 7" />
       <line x1="15" x2="3" y1="12" y2="12" />
     </svg>
-  )
+  );
 }
-
 
 function ShoppingCartIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
@@ -104,9 +124,8 @@ function ShoppingCartIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElemen
       <circle cx="19" cy="21" r="1" />
       <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
     </svg>
-  )
+  );
 }
-
 
 function UserIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
@@ -125,5 +144,5 @@ function UserIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
       <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
       <circle cx="12" cy="7" r="4" />
     </svg>
-  )
+  );
 }

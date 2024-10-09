@@ -50,7 +50,7 @@ export function RegisterPage() {
         formData.userType
       );
 
-      router.push("/auth/confirm"); // Cambia esto si deseas redirigir a otra página después de registrarse
+      router.push("/auth/confirm"); 
     } catch (error: any) {
       setError(error.message);
     }

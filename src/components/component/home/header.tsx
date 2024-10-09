@@ -1,9 +1,11 @@
-"use client"; // Asegúrate de que este archivo se ejecute como un componente del lado del cliente
+"use client"; 
+import { useState } from "react"; 
 import { JSX, SVGProps } from "react";
-import { useAuth } from "../auth/AuthProvider"; // Asegúrate de que la ruta sea correcta
+import { useAuth } from "../auth/AuthProvider"; 
 
 function Header() {
-  const { session, signOut } = useAuth(); 
+  const { session, signOut } = useAuth();
+  const [dropdownOpen, setDropdownOpen] = useState(false); 
 
   const handleLogout = async () => {
     try {
@@ -11,6 +13,10 @@ function Header() {
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }
+  };
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
   };
 
   return (
@@ -26,16 +32,33 @@ function Header() {
         />
       </div>
       <div className="flex items-center space-x-4">
-        {session ? ( 
-          <div className="flex items-center relative">
-            <UserIcon className="mr-1" />
-            <span className="text-sm text-muted-foreground">{session.user?.email}</span>
-            <button 
-              onClick={handleLogout} 
-              className="ml-2 text-sm text-muted-foreground"
-            >
-              Cerrar Sesión
+        {session ? (
+          <div className="relative">
+            <button onClick={toggleDropdown} className="flex items-center text-sm text-muted-foreground">
+              <UserIcon className="mr-1" />
+              {session.user?.email}
             </button>
+            {dropdownOpen && (
+              <div className="absolute right-0 z-10 mt-2 w-48 bg-white border rounded shadow-lg">
+                <div className="py-2">
+                  {session.user?.role === "arrendador" ? ( 
+                    <a href="/dashboard" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-200">
+                      Ir al Dashboard
+                    </a>
+                  ) : (
+                    <a href="/pedidos" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-200">
+                      Mis Pedidos
+                    </a>
+                  )}
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-800 hover:bg-gray-200"
+                  >
+                    Cerrar Sesión
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <>

@@ -1,15 +1,18 @@
-"use client"; 
-import { useState } from "react"; 
+"use client";
+
+import { useState, useEffect } from "react";
 import { JSX, SVGProps } from "react";
-import { useAuth } from "../auth/AuthProvider"; 
+import { useAuth } from "../auth/AuthProvider";
+import { getUserProfile } from "@/app/lib/profiles";
 
 function Header() {
   const { session, signOut } = useAuth();
-  const [dropdownOpen, setDropdownOpen] = useState(false); 
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [userType, setUserType] = useState<string | null>(null); 
 
   const handleLogout = async () => {
     try {
-      await signOut(); 
+      await signOut();
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }
@@ -18,6 +21,21 @@ function Header() {
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (session) {
+        const profile = await getUserProfile(session.user.id);
+        if (profile) {
+          setUserType(profile.userType);
+        } else {
+          console.warn("No se encontró el perfil del usuario.");
+        }
+      }
+    };
+
+    fetchUserProfile();
+  }, [session]);
 
   return (
     <header className="flex items-center justify-between p-4">
@@ -41,7 +59,7 @@ function Header() {
             {dropdownOpen && (
               <div className="absolute right-0 z-10 mt-2 w-48 bg-white border rounded shadow-lg">
                 <div className="py-2">
-                  {session.user?.role === "arrendador" ? ( 
+                  {userType === "arrendador" ? (
                     <a href="/dashboard" className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-200">
                       Ir al Dashboard
                     </a>

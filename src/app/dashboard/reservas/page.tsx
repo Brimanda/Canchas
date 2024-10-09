@@ -20,8 +20,7 @@ import {
 } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 import { JSX, SVGProps } from "react";
-import { useRouter } from "next/navigation";
-import { ModelsList } from "@/components/component/dashboard/cancha/cancha-list";
+import { useRouter } from "next/navigation"
 import { useAuth } from "@/components/component/auth/AuthProvider";
 
 export default function ConceptArtPage() {
@@ -189,7 +188,6 @@ export default function ConceptArtPage() {
           </DropdownMenu>
         </header>
         <main className="flex-1 p-4 sm:p-6">
-        <ModelsList />
         </main>
       </div>
     </div>

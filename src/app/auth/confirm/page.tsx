@@ -1,5 +1,5 @@
 "use client";
-import { VerifyEmail } from '@/components/component/verify-email';
+import { VerifyEmail } from '@/components/component/auth/verify-email';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 

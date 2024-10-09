@@ -165,9 +165,6 @@ export function CrearCanchaComponent() {
                 multiple
                 />
               </div>
-              {imagenNombre && (
-                <span className="text-sm text-muted-foreground">{imagenNombre}</span>
-              )}
             </div>
           </div>
         </div>

@@ -6,15 +6,17 @@ import { supabase } from "@/app/lib/supabase";
 interface AuthContextType {
   session: Session | null;
   isLoading: boolean;
+  userType: string | null; // Agregamos userType aquí
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, usuario: string, nombre: string, apellidos: string, userType: string) => Promise<void>;
   signOut: () => Promise<void>;
   resendVerificationEmail: () => Promise<void>; 
 }
 
-const AuthContext = createContext<AuthContextType>({
+const AuthContext = createContext<AuthContextType>( {
   session: null,
   isLoading: true,
+  userType: null, // Inicializar como null
   signIn: async () => {},
   signUp: async () => {},
   signOut: async () => {},
@@ -24,20 +26,21 @@ const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [userType, setUserType] = useState<string | null>(null); // Estado para userType
 
   useEffect(() => {
     const fetchSession = async () => {
       const { data } = await supabase.auth.getSession();
       setSession(data.session);
+      setUserType(data.session?.user?.user_metadata?.user_type || null); // Establecer userType desde los metadatos
       setIsLoading(false);
     };
 
     fetchSession();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event: any, session: SetStateAction<Session | null>) => {
+    const { data: { subscription }} = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
       setSession(session);
+      setUserType(session?.user?.user_metadata?.user_type || null); // Actualizar userType cuando cambia la sesión
     });
 
     return () => subscription.unsubscribe();
@@ -51,9 +54,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (error) throw error;
   };
 
-  const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ email, password });
+  const signUp = async (email: string, password: string, usuario: string, nombre: string, apellidos: string, userType: string) => {
+    const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) throw error;
+
+    const user = data.user; // Acceder al user correctamente
+
+    // Guardar los datos adicionales en la tabla profiles
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .insert([{ 
+        id: user?.id, 
+        usuario, 
+        nombre, 
+        apellidos, 
+        user_type: userType 
+      }]);
+
+    if (profileError) throw profileError;
   };
 
   const signOut = async () => {
@@ -63,24 +81,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const resendVerificationEmail = async () => {
     try {
-      const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession();
-  
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
       if (sessionError) {
         throw sessionError; 
       }
-  
+
       if (!session || !session.user || !session.user.email) {
         throw new Error("Could not find user's email.");
       }
-  
+
       const { error } = await supabase.auth.resend({
         email: session.user.email,
         type: "signup",
       } as ResendParams);
-  
+
       if (error) throw error;
     } catch (error: any) {
       if (error.name === "AuthApiError" && error.status === 400) {
@@ -96,6 +111,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         session,
         isLoading,
+        userType, // Proveer userType
         signIn,
         signUp,
         signOut,
@@ -114,5 +130,3 @@ export const useAuth = () => {
   }
   return context;
 };
-
-

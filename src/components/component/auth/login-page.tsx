@@ -8,7 +8,7 @@ import { useAuth } from "./AuthProvider";
 import Link from "next/link";
 
 export function LoginPage() {
-  const { signIn } = useAuth(); 
+  const { signIn, session, userType } = useAuth(); 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +19,13 @@ export function LoginPage() {
 
     try {
       await signIn(email, password);
-      router.push("/dashboard");
+      
+      // Redireccionar según el tipo de usuario
+      if (userType === "arrendador") {
+        router.push("/dashboard");
+      } else {
+        router.push("/");
+      }
     } catch (error: any) {
       setError(error.message); 
     }
@@ -68,7 +74,7 @@ export function LoginPage() {
         <div className="text-center text-sm">
           ¿No tienes cuenta?{" "}
           <Link href="/auth/register" className="text-blue-600 hover:underline">
-            Registrate
+            Regístrate
           </Link>
           <br />
           <br />
@@ -79,48 +85,4 @@ export function LoginPage() {
       </div>
     </div>
   );
-}
-
-function ChromeIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <circle cx="12" cy="12" r="4" />
-      <line x1="21.17" x2="12" y1="8" y2="8" />
-      <line x1="3.95" x2="8.54" y1="6.06" y2="14" />
-      <line x1="10.88" x2="15.46" y1="21.94" y2="14" />
-    </svg>
-  )
-}
-
-
-function XIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
-  )
 }

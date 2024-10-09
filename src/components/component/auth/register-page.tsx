@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "./AuthProvider";
-import { supabase } from "@/app/lib/supabase";
 
 export function RegisterPage() {
   const { signUp } = useAuth();
@@ -42,34 +41,16 @@ export function RegisterPage() {
     }
 
     try {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-      });
+      await signUp(
+        formData.email,
+        formData.password,
+        formData.usuario,
+        formData.nombre,
+        formData.apellidos,
+        formData.userType
+      );
 
-      if (authError) {
-        throw authError;
-      }
-
-      const userId = authData.user?.id;
-
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert([
-          {
-            user_id: userId, 
-            username: formData.usuario,
-            nombre: formData.nombre,
-            apellidos: formData.apellidos,
-            user_type: formData.userType,
-          },
-        ]);
-
-      if (profileError) {
-        throw profileError;
-      }
-
-      router.push("/auth/confirm");
+      router.push("/auth/confirm"); // Cambia esto si deseas redirigir a otra página después de registrarse
     } catch (error: any) {
       setError(error.message);
     }

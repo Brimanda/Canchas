@@ -29,11 +29,10 @@ export function VerifyEmail() {
       <div className="mx-auto max-w-md text-center">
         <CircleCheckIcon className="mx-auto h-12 w-12 text-green-500" />
         <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          Email Verification Sent
+          Verificación de correo
         </h1>
         <p className="mt-4 text-muted-foreground">
-          We have sent a verification email to your inbox. Please check your email and click the verification link to
-          confirm your account.
+          Hemos enviado un correo electronico con un enlace a su correo, verifique su correo dando click en el enlace
         </p>
         <div className="mt-6 flex justify-center gap-4">
           <Button variant="outline" disabled={isSending} onClick={handleResendClick}>

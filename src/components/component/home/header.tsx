@@ -1,77 +1,87 @@
+"use client"; // Asegúrate de que este archivo se ejecute como un componente del lado del cliente
 import { JSX, SVGProps } from "react";
-import { useAuth } from "../auth/AuthProvider";
+import { useAuth } from "../auth/AuthProvider"; // Asegúrate de que la ruta sea correcta
 
 function Header() {
   const { session, signOut } = useAuth(); 
 
   const handleLogout = async () => {
-    await signOut(); 
+    try {
+      await signOut(); 
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+    }
   };
 
   return (
-    <div>
-      <header className="flex items-center justify-between p-4">
-        <div className="flex items-center">
-          <img
-            src="/logo.svg"
-            alt="Logo"
-            className="h-8 w-8"
-            width="64"
-            height="64"
-            style={{ aspectRatio: "32/32", objectFit: "cover" }}
-          />
-        </div>
-        <div className="flex items-center space-x-4">
-          {session ? ( 
-            <div className="flex items-center relative">
+    <header className="flex items-center justify-between p-4">
+      <div className="flex items-center">
+        <img
+          src="/logo.svg"
+          alt="Logo"
+          className="h-8 w-8"
+          width="64"
+          height="64"
+          style={{ aspectRatio: "32/32", objectFit: "cover" }}
+        />
+      </div>
+      <div className="flex items-center space-x-4">
+        {session ? ( 
+          <div className="flex items-center relative">
+            <UserIcon className="mr-1" />
+            <span className="text-sm text-muted-foreground">{session.user?.email}</span>
+            <button 
+              onClick={handleLogout} 
+              className="ml-2 text-sm text-muted-foreground"
+            >
+              Cerrar Sesión
+            </button>
+          </div>
+        ) : (
+          <>
+            <a 
+              href="/auth/login" 
+              className="flex items-center text-sm text-muted-foreground"
+            >
+              <LogInIcon className="mr-1" />
+              Inicio Sesión
+            </a>
+            <a 
+              href="/auth/register" 
+              className="flex items-center text-sm text-muted-foreground"
+            >
               <UserIcon className="mr-1" />
-              <span className="text-sm text-muted-foreground">{session.user?.email}</span>
-              <button onClick={handleLogout} className="ml-2 text-sm text-muted-foreground">
-                Cerrar Sesión
-              </button>
-            </div>
-          ) : (
-            <>
-              <a href="/auth/login" className="flex items-center text-sm text-muted-foreground">
-                <LogInIcon className="mr-1" />
-                Inicio Sesión
-              </a>
-              <a href="/auth/register" className="flex items-center text-sm text-muted-foreground">
-                <UserIcon className="mr-1" />
-                Registrarse
-              </a>
-            </>
-          )}
-          <a href="#" className="flex items-center text-sm text-muted-foreground">
-            <ShoppingCartIcon className="mr-1" />
-            (0)
-          </a>
-        </div>
-      </header>
-    </div>
+              Registrarse
+            </a>
+          </>
+        )}
+        <a href="#" className="flex items-center text-sm text-muted-foreground">
+          <ShoppingCartIcon className="mr-1" />
+          (0)
+        </a>
+      </div>
+    </header>
   );
 }
 
 function NavBar() {
   return (
-    <div id="header">
-      <nav className="bg-celeste-claro py-2">
-        <div className="flex justify-center space-x-8 text-white">
-          <a href="/" className="font-bold">
-            Inicio
-          </a>
-          <a href="/canchas" className="hover:text-gray-200">
-            Canchas
-          </a>
-          <a href="/nosotros" className="hover:text-gray-200">
-            Nosotros
-          </a>
-          <a href="/contacto" className="hover:text-gray-200">
-            Contacto
-          </a>
-        </div>
-      </nav>
-    </div>
+    <nav className="bg-celeste-claro py-2">
+      <div className="flex justify-center space-x-8 text-white">
+        <a href="/" className="font-bold">
+          Inicio
+        </a>
+        <a href="/canchas" className="hover:text-gray-200">
+          Canchas
+        </a>
+        <a href="/nosotros" className="hover:text-gray-200">
+          Nosotros
+        </a>
+        <a href="/contacto" className="hover:text-gray-200">
+          Contacto
+        </a>
+      </div>
+    </nav>
   );
 }
 

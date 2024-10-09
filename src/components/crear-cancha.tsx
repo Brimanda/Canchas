@@ -34,7 +34,6 @@ export function CrearCanchaComponent() {
       // Validación de campos obligatorios
       if (!nombre || !tipo || !capacidad || !ubicacion || !precio) {
         setError("No haz llenado todos los campos correspondientes.");
-        setIsLoading(false);
         return;
       }
 

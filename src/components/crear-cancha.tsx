@@ -16,9 +16,9 @@ export function CrearCanchaComponent() {
   const [nombre, setNombre] = useState("");
   const [tipo, setTipo] = useState("");
   const [capacidad, setCapacidad] = useState("");
-  const [ubicacion, setUbicacion] = useState(false);
+  const [ubicacion, setUbicacion] = useState("");
   const [imageFiles, setImageFiles] = useState<FileList | null>(null);
-  const [precio, setPrecio] = useState<File | null>(null);
+  const [precio, setPrecio] = useState("");
   const [disponibilidad, setDisponibilidad] = useState(true);
 
   const router = useRouter();

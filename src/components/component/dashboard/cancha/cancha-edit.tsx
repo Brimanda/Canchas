@@ -14,7 +14,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../ui/card";
+} from "../../../ui/card";
 import { StorageError } from "@supabase/storage-js";
 import Image from "next/image";
 import { XIcon, PlusIcon, UploadIcon } from "lucide-react";

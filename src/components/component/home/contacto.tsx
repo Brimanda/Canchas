@@ -3,9 +3,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Send, Phone, Mail, MapPin } from 'lucide-react'
-import { Resend } from 'resend'
-
-const resend = new Resend(process.env.NEXT_PUBLIC_RESEND_API_KEY!)
 
 export function ContactComponent() {
   const [name, setName] = useState('')
@@ -21,17 +18,18 @@ export function ContactComponent() {
     setError(null)
 
     try {
-      await resend.emails.send({
-        from: email, // Correo del usuario
-        to: 'br.miranda@duocuc.cl', // Tu correo
-        subject: `Mensaje de contacto de ${name}`,
-        html: `
-          <p>Nombre: ${name}</p>
-          <p>Email: ${email}</p>
-          <p>Mensaje:</p>
-          <p>${message}</p>
-        `,
+      const response = await fetch('/api/sendEmail', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, message }),
       })
+
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor')
+      }
+
       setSuccess(true)
       setName('')
       setEmail('')

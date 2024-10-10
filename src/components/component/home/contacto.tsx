@@ -21,7 +21,6 @@ export function ContactComponent() {
     <div className="bg-black text-white min-h-screen flex items-center justify-center p-4">
       <div className="bg-white text-black rounded-lg shadow-2xl overflow-hidden max-w-4xl w-full">
         <div className="flex flex-col md:flex-row">
-          {/* Contact Information */}
           <div className="bg-sky-100 p-8 md:w-1/2">
             <h2 className="text-3xl font-bold mb-6">Contáctanos</h2>
             <div className="space-y-4">
@@ -32,7 +31,7 @@ export function ContactComponent() {
                 transition={{ delay: 0.2 }}
               >
                 <Phone className="w-6 h-6 mr-4 text-sky-600" />
-                <span>+34 123 456 789</span>
+                <span>+569 87291028</span>
               </motion.div>
               <motion.div 
                 className="flex items-center"
@@ -50,12 +49,10 @@ export function ContactComponent() {
                 transition={{ delay: 0.6 }}
               >
                 <MapPin className="w-6 h-6 mr-4 text-sky-600" />
-                <span>Calle Principal 123, Ciudad Deportiva</span>
+                <span>Calle Principal 123, Viña del Mar</span>
               </motion.div>
             </div>
           </div>
-
-          {/* Contact Form */}
           <div className="p-8 md:w-1/2">
             <h3 className="text-2xl font-semibold mb-6">Envíanos un mensaje</h3>
             <form onSubmit={handleSubmit} className="space-y-4">

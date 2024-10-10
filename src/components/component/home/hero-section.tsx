@@ -8,9 +8,10 @@ import { Calendar, MapPin, Users } from 'lucide-react'
 export function HeroSectionComponent() {
   const [currentImage, setCurrentImage] = useState(0)
   const images = [
-    '/placeholder.svg?height=1080&width=1920&text=Fútbol',
-    '/placeholder.svg?height=1080&width=1920&text=Tenis',
-    '/placeholder.svg?height=1080&width=1920&text=Básquetbol'
+    '/canchababy.jpg?height=1080&width=1920&text=Fútbol',
+    '/canchabasket.jpg?height=1080&width=1920&text=Basket',
+    '/canchavoleyplaya.jpg?height=1080&width=1920&text=Voley',
+    '/padel2.jpg?height=1080&width=1920&text=Padel'
   ]
 
   useEffect(() => {

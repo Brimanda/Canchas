@@ -50,8 +50,9 @@ export function ReservasAnteriores() {
     obtenerReservas();
   }, []);
 
+  // Filtrar reservas asegurando que `lugar` esté definido
   const filteredReservas = reservas.filter(reserva => 
-    (reserva.lugar.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (reserva.lugar?.toLowerCase().includes(searchTerm.toLowerCase()) ||
      reserva.fecha.includes(searchTerm)) &&
     (filterStatus === 'todas' || reserva.estado === filterStatus)
   );

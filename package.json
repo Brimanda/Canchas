@@ -37,6 +37,7 @@
     "react-bootstrap": "^2.10.5",
     "react-dom": "^18.3.1",
     "react-modal": "^3.16.1",
+    "resend": "^4.0.0",
     "serverless-mysql": "^1.5.5",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7"

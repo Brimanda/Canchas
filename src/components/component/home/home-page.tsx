@@ -9,6 +9,8 @@ import { AboutUsComponent } from "./about-us";
 import { FooterComponent } from "./footer";
 import Hero from "./hero";
 import WorksComponent from "./works";
+import Beneficios from "./beneficios";
+import PropertyTypes from "./descubre";
 
 
 const images = [
@@ -50,9 +52,11 @@ const Home = () => {
       <WorksComponent/>
 
       {/* Sección Canchas Deportivas */}
-
+      <Beneficios/>
 
       {/* Sección Sobre Nosotros */}
+
+      <PropertyTypes/>
       
       
 

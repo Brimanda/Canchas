@@ -50,12 +50,12 @@ export function CanchasDeportivas() {
       try {
         const canchaData = await getCanchas();
         setCanchas(canchaData);
+        console.log(session + "XD"); 
       } catch (err) {
         setError("Error al cargar los datos.");
         console.error(err);
       } finally {
         setIsLoading(false);
-        console.log(session); 
       }
     }
     fetchData();

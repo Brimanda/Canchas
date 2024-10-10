@@ -33,34 +33,42 @@ export function ConfirmacionReservaComponent() {
   const confirmarReserva = async () => {
     setLoading(true);
     setError(null);
-
+  
+    console.log("Cancha ID:", canchaId);
+    console.log("User ID:", userId);
+  
     if (!canchaId || !userId) {
       setError('Faltan algunos datos necesarios para confirmar la reserva.');
       setLoading(false);
       return;
     }
-
-    const fechaReserva = new Date(fecha); // Convertir la fecha seleccionada a un objeto Date
-    const horaReserva = obtenerHoraActual(); // Usar la hora actual para la reserva
-
+  
+    const fechaReserva = new Date(fecha); 
+    const horaReserva = obtenerHoraActual(); 
+  
+    console.log("Fecha Reserva:", fechaReserva);
+    console.log("Hora Reserva:", horaReserva);
+  
     const { data, error } = await supabase.from('reservas').insert([
       {
-        user_id: userId,                // ID del usuario
-        cancha_id: parseInt(canchaId),  // ID de la cancha
-        fecha: fechaReserva,             // Fecha y hora de la reserva
-        estado: 'pendiente',             // Estado inicial de la reserva
+        user_id: userId,                
+        cancha_id: parseInt(canchaId),  
+        fecha: fechaReserva,             
+        estado: 'pendiente',             
       },
     ]);
-
+  
     if (error) {
+      console.error('Error al insertar la reserva:', error);
       setError('Ocurrió un error al confirmar la reserva. Por favor, inténtalo de nuevo.');
-      console.error(error);
     } else {
+      console.log('Reserva insertada:', data);
       setSuccess(true);
     }
-
+  
     setLoading(false);
   };
+  
 
   if (success) {
     return (

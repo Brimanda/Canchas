@@ -40,7 +40,8 @@ export function ConfirmacionReservaComponent() {
       return;
     }
 
-    const fechaReserva = obtenerHoraActual(); // Usar la fecha y hora actuales
+    const fechaReserva = new Date(fecha); // Convertir la fecha seleccionada a un objeto Date
+    const horaReserva = obtenerHoraActual(); // Usar la hora actual para la reserva
 
     const { data, error } = await supabase.from('reservas').insert([
       {

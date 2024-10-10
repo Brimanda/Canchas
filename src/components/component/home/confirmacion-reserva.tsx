@@ -23,7 +23,6 @@ export function ConfirmacionReservaComponent() {
   const tipo = searchParams.get('tipo') || 'No especificado';
   const canchaId = searchParams.get('cancha_id') || null;
   const userId = searchParams.get('user_id') || null;
-  const fecha = searchParams.get('fecha') || 'No especificado';
   const precio = searchParams.get('precio') || 'No especificado';
 
   const obtenerHoraActual = () => {
@@ -34,21 +33,14 @@ export function ConfirmacionReservaComponent() {
     setLoading(true);
     setError(null);
 
-    if (!canchaId || !userId || fecha === 'No especificado') {
+    if (!canchaId || !userId) {
       setError('Faltan algunos datos necesarios para confirmar la reserva.');
       setLoading(false);
       return;
     }
 
     const horaReserva = obtenerHoraActual(); 
-    const fechaReserva = new Date(fecha); // Asegúrate de que la fecha esté en un formato válido
-
-    // Verificar si la fecha se ha convertido correctamente
-    if (isNaN(fechaReserva.getTime())) {
-      setError('La fecha proporcionada no es válida.');
-      setLoading(false);
-      return;
-    }
+    const fechaReserva = obtenerHoraActual(); // Usar la fecha actual
 
     const { data, error } = await supabase.from('reservas').insert([
       {
@@ -107,7 +99,7 @@ export function ConfirmacionReservaComponent() {
               <Calendar className="text-blue-500" />
               <div>
                 <p className="font-semibold">Fecha</p>
-                <p className="text-sm text-gray-600">{fecha !== 'No especificado' ? new Date(fecha).toLocaleDateString() : fecha}</p> 
+                <p className="text-sm text-gray-600">{obtenerHoraActual().toLocaleDateString()}</p> 
               </div>
             </div>
             <div className="flex items-center space-x-2">

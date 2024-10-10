@@ -11,6 +11,7 @@ import Hero from "./hero";
 import WorksComponent from "./works";
 import Beneficios from "./beneficios";
 import PropertyTypes from "./descubre";
+import { HeroSectionComponent } from "./hero-section";
 
 
 const images = [
@@ -58,7 +59,9 @@ const Home = () => {
 
       {/* Sección Sobre Nosotros */}
       
+      <HeroSectionComponent/>
 
+      <br />
 
       {/* Footer */}
       <FooterComponent />

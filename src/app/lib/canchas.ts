@@ -24,7 +24,7 @@ export async function createCancha(canchaData: any) {
 
 export async function updateCancha(canchaId: number, updatedData: any) {
   const { data, error } = await supabase
-    .from("cancha")
+    .from("canchas")
     .update(updatedData)
     .eq("id", canchaId);
   if (error) throw error;
@@ -32,7 +32,7 @@ export async function updateCancha(canchaId: number, updatedData: any) {
 }
 
 export async function deleteCancha(canchaId: number) {
-  const { data, error } = await supabase.from("cancha").delete().eq("id", canchaId);
+  const { data, error } = await supabase.from("canchas").delete().eq("id", canchaId);
   if (error) throw error;
   return data;
 }

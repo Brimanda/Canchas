@@ -55,6 +55,7 @@ export function CanchasDeportivas() {
         console.error(err);
       } finally {
         setIsLoading(false);
+        console.log(session); 
       }
     }
     fetchData();

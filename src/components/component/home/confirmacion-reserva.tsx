@@ -6,7 +6,6 @@ import { CheckCircle, Clock, Calendar, Users, DollarSign } from "lucide-react";
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// Crea una instancia del cliente de Supabase
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -25,7 +24,6 @@ export function ConfirmacionReservaComponent() {
   const fecha = searchParams.get('fecha') || new Date().toISOString(); 
   const precio = searchParams.get('precio') || 'No especificado';
 
-  // Función para obtener la sesión del usuario desde Supabase
   const obtenerUsuario = async () => {
     const { data: { session }, error } = await supabase.auth.getSession();
 
@@ -33,11 +31,10 @@ export function ConfirmacionReservaComponent() {
       console.error("Error obteniendo la sesión:", error);
       setError("Error obteniendo la sesión del usuario.");
     } else if (session) {
-      setUserId(session.user.id);  // Guarda el userId en el estado
+      setUserId(session.user.id); 
     }
   };
 
-  // Llamamos a obtenerUsuario cuando el componente se monta
   useEffect(() => {
     obtenerUsuario();
   }, []);
@@ -60,10 +57,10 @@ export function ConfirmacionReservaComponent() {
     const horaReserva = obtenerHoraActual(); 
   
     const { data, error } = await supabase.from('reservas').insert([{
-        user_id: userId,                // ID del usuario que hace la reserva
-        cancha_id: parseInt(canchaId),  // ID de la cancha seleccionada
-        fecha: fechaReserva,            // Fecha de la reserva
-        estado: 'pendiente',            // Estado de la reserva inicial
+        user_id: userId,                
+        cancha_id: parseInt(canchaId), 
+        fecha: fechaReserva,            
+        estado: 'pendiente',            
     }]);
   
     if (error) {
@@ -71,7 +68,7 @@ export function ConfirmacionReservaComponent() {
       setError('Ocurrió un error al confirmar la reserva. Por favor, inténtalo de nuevo.');
     } else {
       console.log('Reserva insertada:', data);
-      setSuccess(true); // Mostrar mensaje de éxito
+      setSuccess(true); 
     }
   
     setLoading(false);

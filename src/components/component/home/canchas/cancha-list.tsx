@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,7 @@ export function CanchasDeportivas() {
   const [filtroCapacidadMin, setFiltroCapacidadMin] = useState(0);
 
   const router = useRouter();
-  const session = useSession();
+  const session = useSession(); // Obtiene la sesión actual
 
   const toggleFiltroDeporte = (deporte: string) => {
     setFiltrosDeporte(prev =>
@@ -61,7 +61,7 @@ export function CanchasDeportivas() {
   }, []);
 
   const handleReservar = (cancha: any) => {
-    const userId = session?.user?.id; // Asegúrate de que la sesión y el usuario existen
+    const userId = session?.user?.id; // Verifica que la sesión y el usuario existen
 
     if (!userId) {
       alert("Debes estar autenticado para reservar.");
@@ -76,8 +76,8 @@ export function CanchasDeportivas() {
       ubicacion: cancha.ubicacion,
       precio: cancha.precio.toString(),
       disponibilidad: cancha.disponibilidad.toString(),
-      cancha_id: cancha.id.toString(),  // Incluye el ID de la cancha
-      user_id: userId                   // Incluye el ID del usuario
+      cancha_id: cancha.id.toString(),
+      user_id: userId
     });
   
     router.push(`/confirmacion-reserva?${queryParams.toString()}`);

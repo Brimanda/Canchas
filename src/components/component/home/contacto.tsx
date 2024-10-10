@@ -18,18 +18,20 @@ export function ContactComponent() {
     setError(null)
 
     try {
+      // Envío del formulario a la API
       const response = await fetch('/api/sendEmail', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, message }),
+        body: JSON.stringify({ name, email, message }),  // Se envían los datos a la API
       })
 
       if (!response.ok) {
         throw new Error('Error en la respuesta del servidor')
       }
 
+      // Si la respuesta es exitosa
       setSuccess(true)
       setName('')
       setEmail('')

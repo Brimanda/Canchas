@@ -2,7 +2,7 @@
 import { useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Clock, Calendar, Users, DollarSign } from "lucide-react";
+import { CheckCircle, Clock, Calendar, Users } from "lucide-react";
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
@@ -19,10 +19,11 @@ export function ConfirmacionReservaComponent() {
   const [userId, setUserId] = useState<string | null>(null);
 
   const nombre = searchParams.get('nombre') || 'No especificado';
+  const ubicacion = searchParams.get('ubicacion') || 'No especificado'; 
+  const capacidad = searchParams.get('capacidad') || 'No especificado'; 
   const tipo = searchParams.get('tipo') || 'No especificado';
   const canchaId = searchParams.get('cancha_id');
   const fecha = searchParams.get('fecha') || new Date().toISOString(); 
-  const precio = parseFloat(searchParams.get('precio') || '0'); // Convertir a número
 
   const obtenerUsuario = async () => {
     const { data: { session }, error } = await supabase.auth.getSession();
@@ -61,10 +62,9 @@ export function ConfirmacionReservaComponent() {
         cancha_id: parseInt(canchaId), 
         fecha: fechaReserva,            
         estado: 'pendiente',            
-        nombre_cancha: nombre,          // Agregar el nombre de la cancha
-        ubicacion: 'Ubicación de ejemplo', // Aquí deberías obtener la ubicación real
-        capacidad: 10,                   // Aquí deberías obtener la capacidad real
-        precio: precio                    // Agregar el precio
+        nombre_cancha: nombre,         
+        ubicacion: ubicacion,           
+        capacidad: capacidad,          
     }]);
   
     if (error) {
@@ -133,10 +133,17 @@ export function ConfirmacionReservaComponent() {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <DollarSign className="text-blue-500" />
+              <Users className="text-blue-500" />
               <div>
-                <p className="font-semibold">Precio</p>
-                <p className="text-sm text-gray-600">${precio.toFixed(2)}</p>
+                <p className="font-semibold">Ubicación</p>
+                <p className="text-sm text-gray-600">{ubicacion}</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Users className="text-blue-500" />
+              <div>
+                <p className="font-semibold">Capacidad</p>
+                <p className="text-sm text-gray-600">{capacidad}</p>
               </div>
             </div>
           </div>

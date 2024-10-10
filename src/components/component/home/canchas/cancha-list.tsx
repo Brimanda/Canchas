@@ -1,195 +1,153 @@
 'use client';
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation"; // Importa useRouter
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { Toggle } from "@/components/ui/toggle";
-import { CalendarIcon, MapPinIcon, UsersIcon } from "lucide-react";
-import Image from "next/image";
-import { getCanchas } from "@/app/lib/canchas";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckCircle, Clock, Calendar, Users, DollarSign } from "lucide-react";
+import { useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
 
-const tiposDeporte = ["futbol", "tenis", "basquet", "voley"];
+// Crea una instancia del cliente de Supabase
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
-export function CanchasDeportivas() {
-  const [canchas, setCanchas] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export function ConfirmacionReservaComponent() {
+  const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [filtrosDeporte, setFiltrosDeporte] = useState<string[]>([]);
-  const [filtroDisponibilidad, setFiltroDisponibilidad] = useState("todas");
-  const [filtroPrecioMax, setFiltroPrecioMax] = useState(60);
-  const [filtroCapacidadMin, setFiltroCapacidadMin] = useState(0);
+  const [success, setSuccess] = useState(false);
 
-  const router = useRouter(); // Inicializa el router para la navegación
+  const nombre = searchParams.get('nombre') || 'No especificado';
+  const tipo = searchParams.get('tipo') || 'No especificado';
+  const canchaId = searchParams.get('cancha_id') || null;
+  const userId = searchParams.get('user_id') || null;
+  const fecha = searchParams.get('fecha') || new Date().toISOString(); // Usa la fecha actual si no se pasa ninguna
+  const precio = searchParams.get('precio') || 'No especificado';
 
-  const toggleFiltroDeporte = (deporte: string) => {
-    setFiltrosDeporte(prev =>
-      prev.includes(deporte)
-        ? prev.filter(d => d !== deporte)
-        : [...prev, deporte]
-    );
+  const obtenerHoraActual = () => {
+    return new Date(); 
   };
 
-  const canchasFiltradas = canchas.filter((cancha) => {
-    return (
-      (filtrosDeporte.length === 0 || filtrosDeporte.includes(cancha.tipo)) &&
-      (filtroDisponibilidad === "todas" || 
-       (filtroDisponibilidad === "disponibles" && cancha.disponible) ||
-       (filtroDisponibilidad === "no disponibles" && !cancha.disponible)) &&
-      cancha.precio <= filtroPrecioMax &&
-      cancha.capacidad >= filtroCapacidadMin
-    );
-  });
+  const confirmarReserva = async () => {
+    setLoading(true);
+    setError(null);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const canchaData = await getCanchas();
-        setCanchas(canchaData);
-      } catch (err) {
-        setError("Error al cargar los datos.");
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
+    if (!canchaId || !userId) {
+      setError('Faltan algunos datos necesarios para confirmar la reserva.');
+      setLoading(false);
+      return;
     }
-    fetchData();
-  }, []);
 
-  const transformedData = useMemo(() => {
-    return [...canchas].slice(0, 12).map(item => ({
-      ...item,
-      image_url: item.imagen && item.imagen.length > 0 ? item.imagen : "/placeholder.svg"
-    }));
-  }, [canchas]);
+    const fechaReserva = new Date(fecha); // Convertir la fecha seleccionada a un objeto Date
+    const horaReserva = obtenerHoraActual(); // Usar la hora actual para la reserva
 
-  const handleReservar = (cancha: any) => {
-    const queryParams = new URLSearchParams({
-      nombre: cancha.nombre,
-      tipo: cancha.tipo,
-      capacidad: cancha.capacidad.toString(),
-      ubicacion: cancha.ubicacion,
-      precio: cancha.precio.toString(),
-      disponibilidad: cancha.disponibilidad.toString(),
-    });
-  
-    router.push(`/confirmacion-reserva?${queryParams.toString()}`);
-    console.log(queryParams.toString());
+    const { data, error } = await supabase.from('reservas').insert([
+      {
+        user_id: userId,                // ID del usuario
+        cancha_id: parseInt(canchaId),  // ID de la cancha
+        fecha: fechaReserva,             // Fecha y hora de la reserva
+        estado: 'pendiente',             // Estado inicial de la reserva
+      },
+    ]);
+
+    if (error) {
+      setError('Ocurrió un error al confirmar la reserva. Por favor, inténtalo de nuevo.');
+      console.error(error);
+    } else {
+      setSuccess(true);
+    }
+
+    setLoading(false);
   };
-  
+
+  if (success) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <Card className="w-full max-w-2xl">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-center">Reserva Confirmada</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-green-600">Tu reserva ha sido confirmada exitosamente.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center text-primary">Canchas Deportivas</h1>
-
-      <div className="mb-6 space-y-4">
-        <div className="flex flex-wrap gap-2 justify-center">
-          {tiposDeporte.map((deporte) => (
-            <Toggle
-              key={deporte}
-              pressed={filtrosDeporte.includes(deporte)}
-              onPressedChange={() => toggleFiltroDeporte(deporte)}
-              className="capitalize"
-            >
-              {deporte}
-            </Toggle>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <Select value={filtroDisponibilidad} onValueChange={setFiltroDisponibilidad}>
-            <SelectTrigger>
-              <SelectValue placeholder="Disponibilidad" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="todas">Todas</SelectItem>
-              <SelectItem value="disponibles">Disponibles</SelectItem>
-              <SelectItem value="no disponibles">No disponibles</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <div>
-            <label htmlFor="precio-max" className="block text-sm font-medium text-gray-700 mb-1">
-              Precio máximo: ${filtroPrecioMax}
-            </label>
-            <Slider
-              id="precio-max"
-              min={0}
-              max={100000}
-              step={5000}
-              value={[filtroPrecioMax]}
-              onValueChange={(value) => setFiltroPrecioMax(value[0])}
-            />
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+      <Card className="w-full max-w-2xl">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-center">Confirmación de Reserva</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {error && (
+            <div className="bg-red-100 border-l-4 border-red-500 p-4">
+              <p className="text-red-700">{error}</p>
+            </div>
+          )}
+          <div className="bg-green-100 border-l-4 border-green-500 p-4 flex items-center">
+            <CheckCircle className="text-green-500 mr-2" />
+            <p className="text-green-700">Tu reserva está casi lista. Por favor, revisa los detalles.</p>
           </div>
 
-          <div>
-            <label htmlFor="capacidad-min" className="block text-sm font-medium text-gray-700 mb-1">
-              Capacidad mínima: {filtroCapacidadMin}
-            </label>
-            <Slider
-              id="capacidad-min"
-              min={0}
-              max={25}
-              step={1}
-              value={[filtroCapacidadMin]}
-              onValueChange={(value) => setFiltroCapacidadMin(value[0])}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center space-x-2">
+              <Calendar className="text-blue-500" />
+              <div>
+                <p className="font-semibold">Fecha</p>
+                <p className="text-sm text-gray-600">{new Date(fecha).toLocaleDateString()}</p> 
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Clock className="text-blue-500" />
+              <div>
+                <p className="font-semibold">Hora</p>
+                <p className="text-sm text-gray-600">{obtenerHoraActual().toLocaleTimeString()}</p> 
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Users className="text-blue-500" />
+              <div>
+                <p className="font-semibold">Cancha</p>
+                <p className="text-sm text-gray-600">{`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} - ${nombre}`}</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <DollarSign className="text-blue-500" />
+              <div>
+                <p className="font-semibold">Precio</p>
+                <p className="text-sm text-gray-600">${precio}</p>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : error ? (
-          <p className="text-red-500">{error}</p>
-        ) : canchasFiltradas.length === 0 ? (
-          <p className="text-center">No se encontraron canchas con los filtros seleccionados.</p>
-        ) : (
-          canchasFiltradas.map((cancha) => (
-            <Card key={cancha.id} className="overflow-hidden transition-shadow hover:shadow-lg">
-              <Image
-                src={cancha.imagen.url || "/placeholder.svg"}
-                alt={cancha.nombre}
-                width={300}
-                height={200}
-                className="w-full h-48 object-cover"
-              />
-              <CardHeader className="bg-gradient-to-r from-celeste-claro to-secondary text-white">
-                <CardTitle>{cancha.nombre}</CardTitle>
-                <CardDescription className="text-primary-foreground">
-                  {cancha.tipo.charAt(0).toUpperCase() + cancha.tipo.slice(1)}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-4">
-                <div className="flex items-center mb-2">
-                  <UsersIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                  <span>Capacidad: {cancha.capacidad} personas</span>
-                </div>
-                <div className="flex items-center mb-2">
-                  <MapPinIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                  <span>Ubicación: {cancha.ubicacion}</span>
-                </div>
-                <div className="flex items-center">
-                  <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                  <span>Disponibilidad: {cancha.disponibilidad ? "Disponible" : "No disponible"}</span>
-                </div>
-              </CardContent>
-              <CardFooter className="bg-muted/50 flex justify-between items-center">
-                <span className="text-lg font-semibold">${cancha.precio}/hora</span>
-                <Button
-                  disabled={!cancha.disponibilidad}
-                  onClick={() => handleReservar(cancha)} // Aquí llamas a handleReservar con la cancha seleccionada
-                >
-                  {cancha.disponibilidad ? "Reservar" : "No disponible"}
-                </Button>
-              </CardFooter>
-            </Card>
-          ))
-        )}
-      </div>
+          <div className="space-y-4">
+            <h3 className="font-semibold text-lg">Proceso de confirmación:</h3>
+            <ol className="list-decimal list-inside space-y-2">
+              <li>Verifica que todos los detalles de la reserva sean correctos.</li>
+              <li>Asegúrate de que la fecha y hora seleccionadas te convengan.</li>
+              <li>Revisa el precio total de la reserva.</li>
+              <li>Lee y acepta los términos y condiciones de uso de la cancha.</li>
+              <li>Haz clic en el botón "Confirmar Reserva" para finalizar el proceso.</li>
+            </ol>
+          </div>
+
+          <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4">
+            <p className="text-yellow-700">
+              Nota: Una vez confirmada la reserva, aplicarán las políticas de cancelación y reembolso.
+            </p>
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button className="w-full text-lg py-6" size="lg" onClick={confirmarReserva} disabled={loading}>
+            {loading ? 'Confirmando...' : 'Confirmar Reserva'}
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
   );
 }

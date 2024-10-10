@@ -51,13 +51,12 @@ const Home = () => {
       {/* Sección Ultimas Añadidas */}
       <WorksComponent/>
 
+      <PropertyTypes/>
+
       {/* Sección Canchas Deportivas */}
       <Beneficios/>
 
       {/* Sección Sobre Nosotros */}
-
-      <PropertyTypes/>
-      
       
 
 

@@ -69,6 +69,10 @@ export default function ConceptArtPage() {
         }`}
       >
         <div className="flex flex-col items-center gap-4 px-2 pt-4 sm:py-6">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-semibold text-primary-foreground sm:h-12 sm:w-12">
+            <span className="sr-only">Portfolio</span>
+            <MountainIcon className="h-6 w-6 sm:h-7 sm:w-7" />
+          </div>
           <div className="flex-1 sm:px-4">
             <div className="grid gap-2">
               <Link
@@ -79,27 +83,27 @@ export default function ConceptArtPage() {
                 prefetch={false}
               >
                 <HomeIcon className="h-5 w-5 sm:h-6 sm:w-6" />
-                {isSidebarOpen && <span className="text-sm font-medium sm:text-base">Home</span>}
+                {isSidebarOpen && <span className="text-sm font-medium sm:text-base">Inicio</span>}
               </Link>
               <Link
-                href="/dashboard/models"
+                href="/dashboard/canchas"
                 onMouseOver={handleLinkMouseOver}
                 onMouseOut={handleLinkMouseOut}
                 className="flex items-start gap-3 rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 prefetch={false}
               >
                 <BriefcaseIcon className="h-5 w-5 sm:h-6 sm:w-6" />
-                {isSidebarOpen && <span className="text-sm font-medium sm:text-base">Models</span>}
+                {isSidebarOpen && <span className="text-sm font-medium sm:text-base">Canchas</span>}
               </Link>
               <Link
-                href="/dashboard/concept-art"
+                href="/dashboard/reservas"
                 onMouseOver={handleLinkMouseOver}
                 onMouseOut={handleLinkMouseOut}
                 className="flex items-start gap-3 rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 prefetch={false}
               >
                 <BriefcaseIcon className="h-5 w-5 sm:h-6 sm:w-6" />
-                {isSidebarOpen && <span className="text-sm font-medium sm:text-base">Concept Art</span>}
+                {isSidebarOpen && <span className="text-sm font-medium sm:text-base">Reservas</span>}
               </Link>
             </div>
           </div>

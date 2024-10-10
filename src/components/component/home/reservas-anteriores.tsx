@@ -12,12 +12,11 @@ import { motion } from "framer-motion";
 type Reserva = {
   id: string;
   fecha: string;
-  lugar: string;
-  personas: number;
+  ubicacion: string;
+  capacidad: number;
   estado: "confirmada" | "pendiente" | "cancelada";
 };
 
-// Crear un cliente de Supabase
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -30,11 +29,10 @@ export function ReservasAnteriores() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Función para obtener reservas de Supabase
   const obtenerReservas = async () => {
     setLoading(true);
     const { data, error } = await supabase
-      .from('reservas') // Reemplaza 'reservas' con el nombre de tu tabla
+      .from('reservas') 
       .select('*');
 
     if (error) {
@@ -50,9 +48,8 @@ export function ReservasAnteriores() {
     obtenerReservas();
   }, []);
 
-  // Filtrar reservas asegurando que `lugar` esté definido
   const filteredReservas = reservas.filter(reserva => 
-    (reserva.lugar?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (reserva.ubicacion?.toLowerCase().includes(searchTerm.toLowerCase()) ||
      reserva.fecha.includes(searchTerm)) &&
     (filterStatus === 'todas' || reserva.estado === filterStatus)
   );
@@ -130,13 +127,13 @@ export function ReservasAnteriores() {
                       <TableCell>
                         <div className="flex items-center">
                           <MapPinIcon className="mr-2 h-4 w-4 text-sky-600" />
-                          {reserva.lugar}
+                          {reserva.ubicacion}
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center">
                           <UsersIcon className="mr-2 h-4 w-4 text-sky-600" />
-                          {reserva.personas}
+                          {reserva.capacidad}
                         </div>
                       </TableCell>
                       <TableCell className="text-right">

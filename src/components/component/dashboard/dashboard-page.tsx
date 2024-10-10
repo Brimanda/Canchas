@@ -22,6 +22,7 @@ import { useState, useEffect } from "react";
 import { JSX, SVGProps } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../auth/AuthProvider";
+import { DashboardReservasComponent } from "@/components/dashboard-reservas";
 
 export function DashboardPage() {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -192,31 +193,7 @@ export function DashboardPage() {
           </DropdownMenu>
         </header>
         <main className="flex-1 p-4 sm:p-6">
-          <div className="grid gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Welcome Back</CardTitle>
-                <CardDescription>Aquí está un resumen de tus actividades recientes.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4">
-                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                    <div className="rounded-md bg-muted p-4 text-center">
-                      <BriefcaseIcon className="h-6 w-6 text-muted-foreground" />
-                      <p className="mt-2 text-2xl font-bold">12</p>
-                      <p className="text-sm text-muted-foreground">Works</p>
-                    </div>
-                    <div className="rounded-md bg-muted p-4 text-center">
-                      <CalendarIcon className="h-6 w-6 text-muted-foreground" />
-                      <p className="mt-2 text-2xl font-bold">24</p>
-                      <p className="text-sm text-muted-foreground">Concept Art</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-          </div>
+        <DashboardReservasComponent/>
         </main>
       </div>
     </div>

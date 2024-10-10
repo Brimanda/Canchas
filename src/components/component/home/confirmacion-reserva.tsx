@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Clock, Calendar, Users, DollarSign } from "lucide-react";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 // Crea una instancia del cliente de Supabase
@@ -18,11 +18,11 @@ export function ConfirmacionReservaComponent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null); // Añadido para almacenar el ID del usuario
 
   const nombre = searchParams.get('nombre') || 'No especificado';
   const tipo = searchParams.get('tipo') || 'No especificado';
   const canchaId = searchParams.get('cancha_id') || null;
-  const userId = searchParams.get('user_id') || null;
   const fecha = searchParams.get('fecha') || new Date().toISOString(); 
   const precio = searchParams.get('precio') || 'No especificado';
 
@@ -68,7 +68,16 @@ export function ConfirmacionReservaComponent() {
   
     setLoading(false);
   };
-  
+
+  // Obtener el ID del usuario autenticado
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUserId(user?.id || null); // Establecer el ID del usuario
+    };
+
+    fetchUserId();
+  }, []);
 
   if (success) {
     return (

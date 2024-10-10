@@ -1,10 +1,21 @@
-'use client'
+'use client';
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckCircle, Clock, Calendar, Users, DollarSign } from "lucide-react"
+import { useSearchParams } from 'next/navigation'; // Importa useSearchParams
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckCircle, Clock, Calendar, Users, DollarSign } from "lucide-react";
 
 export function ConfirmacionReservaComponent() {
+  const searchParams = useSearchParams();
+
+  // Obtén los parámetros de la consulta
+  const nombre = searchParams.get('nombre') || 'No especificado';
+  const tipo = searchParams.get('tipo') || 'No especificado';
+  const capacidad = searchParams.get('capacidad') || 'No especificada';
+  const ubicacion = searchParams.get('ubicacion') || 'No especificada';
+  const precio = searchParams.get('precio') || 'No especificado';
+  const disponibilidad = searchParams.get('disponibilidad') === 'true' ? 'Disponible' : 'No disponible';
+
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl">
@@ -16,34 +27,34 @@ export function ConfirmacionReservaComponent() {
             <CheckCircle className="text-green-500 mr-2" />
             <p className="text-green-700">Tu reserva está casi lista. Por favor, revisa los detalles.</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex items-center space-x-2">
               <Calendar className="text-blue-500" />
               <div>
                 <p className="font-semibold">Fecha</p>
-                <p className="text-sm text-gray-600">15 de Octubre, 2023</p>
+                <p className="text-sm text-gray-600">15 de Octubre, 2023</p> 
               </div>
             </div>
             <div className="flex items-center space-x-2">
               <Clock className="text-blue-500" />
               <div>
                 <p className="font-semibold">Hora</p>
-                <p className="text-sm text-gray-600">18:00 - 19:00</p>
+                <p className="text-sm text-gray-600">18:00 - 19:00</p> 
               </div>
             </div>
             <div className="flex items-center space-x-2">
               <Users className="text-blue-500" />
               <div>
                 <p className="font-semibold">Cancha</p>
-                <p className="text-sm text-gray-600">Fútbol 5 - Cancha 3</p>
+                <p className="text-sm text-gray-600">{`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} - ${nombre}`}</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
               <DollarSign className="text-blue-500" />
               <div>
                 <p className="font-semibold">Precio</p>
-                <p className="text-sm text-gray-600">$50.00</p>
+                <p className="text-sm text-gray-600">${precio}</p>
               </div>
             </div>
           </div>
@@ -72,5 +83,5 @@ export function ConfirmacionReservaComponent() {
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }

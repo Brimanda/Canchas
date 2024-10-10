@@ -1,34 +1,36 @@
-'use client'
+'use client';
 
-import { useEffect, useMemo, useState } from "react"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Slider } from "@/components/ui/slider"
-import { Toggle } from "@/components/ui/toggle"
-import { CalendarIcon, MapPinIcon, UsersIcon } from "lucide-react"
-import Image from "next/image"
-import { getCanchas } from "@/app/lib/canchas"
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation"; // Importa useRouter
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Toggle } from "@/components/ui/toggle";
+import { CalendarIcon, MapPinIcon, UsersIcon } from "lucide-react";
+import Image from "next/image";
+import { getCanchas } from "@/app/lib/canchas";
 
-
-const tiposDeporte = ["futbol", "tenis", "basquet", "voley"]
+const tiposDeporte = ["futbol", "tenis", "basquet", "voley"];
 
 export function CanchasDeportivas() {
   const [canchas, setCanchas] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filtrosDeporte, setFiltrosDeporte] = useState<string[]>([])
-  const [filtroDisponibilidad, setFiltroDisponibilidad] = useState("todas")
-  const [filtroPrecioMax, setFiltroPrecioMax] = useState(60)
-  const [filtroCapacidadMin, setFiltroCapacidadMin] = useState(0)
+  const [filtrosDeporte, setFiltrosDeporte] = useState<string[]>([]);
+  const [filtroDisponibilidad, setFiltroDisponibilidad] = useState("todas");
+  const [filtroPrecioMax, setFiltroPrecioMax] = useState(60);
+  const [filtroCapacidadMin, setFiltroCapacidadMin] = useState(0);
+
+  const router = useRouter(); // Inicializa el router para la navegación
 
   const toggleFiltroDeporte = (deporte: string) => {
     setFiltrosDeporte(prev =>
       prev.includes(deporte)
         ? prev.filter(d => d !== deporte)
         : [...prev, deporte]
-    )
-  }
+    );
+  };
 
   const canchasFiltradas = canchas.filter((cancha) => {
     return (
@@ -38,8 +40,8 @@ export function CanchasDeportivas() {
        (filtroDisponibilidad === "no disponibles" && !cancha.disponible)) &&
       cancha.precio <= filtroPrecioMax &&
       cancha.capacidad >= filtroCapacidadMin
-    )
-  })
+    );
+  });
 
   useEffect(() => {
     async function fetchData() {
@@ -62,6 +64,20 @@ export function CanchasDeportivas() {
       image_url: item.imagen && item.imagen.length > 0 ? item.imagen : "/placeholder.svg"
     }));
   }, [canchas]);
+
+  const handleReservar = (cancha: any) => {
+    const queryParams = new URLSearchParams({
+      nombre: cancha.nombre,
+      tipo: cancha.tipo,
+      capacidad: cancha.capacidad.toString(),
+      ubicacion: cancha.ubicacion,
+      precio: cancha.precio.toString(),
+      disponibilidad: cancha.disponibilidad.toString(),
+    });
+  
+    router.push(`/confirmacion-reserva?${queryParams.toString()}`);
+  };
+  
 
   return (
     <div className="container mx-auto p-6">
@@ -162,7 +178,10 @@ export function CanchasDeportivas() {
               </CardContent>
               <CardFooter className="bg-muted/50 flex justify-between items-center">
                 <span className="text-lg font-semibold">${cancha.precio}/hora</span>
-                <Button disabled={!cancha.disponibilidad}>
+                <Button
+                  disabled={!cancha.disponibilidad}
+                  onClick={() => handleReservar(cancha)} // Aquí llamas a handleReservar con la cancha seleccionada
+                >
                   {cancha.disponibilidad ? "Reservar" : "No disponible"}
                 </Button>
               </CardFooter>
@@ -171,5 +190,5 @@ export function CanchasDeportivas() {
         )}
       </div>
     </div>
-  )
+  );
 }

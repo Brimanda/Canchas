@@ -52,8 +52,8 @@ export function ConfirmacionReservaComponent() {
     const { data, error } = await supabase.from('reservas').insert([{
         user_id: userId,                
         cancha_id: parseInt(canchaId),  
-        fecha: fechaReserva,             
-        estado: 'pendiente',             
+        fecha: fechaReserva,            
+        estado: 'pendiente',            
     }]);
   
     if (error) {
@@ -61,7 +61,7 @@ export function ConfirmacionReservaComponent() {
       setError('Ocurrió un error al confirmar la reserva. Por favor, inténtalo de nuevo.');
     } else {
       console.log('Reserva insertada:', data);
-      setSuccess(true);
+      setSuccess(true); // Mostrar mensaje de éxito
     }
   
     setLoading(false);

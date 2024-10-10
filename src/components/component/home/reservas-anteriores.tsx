@@ -107,6 +107,7 @@ export function ReservasAnteriores() {
                   <TableRow>
                     <TableHead className="w-[150px]">Fecha</TableHead>
                     <TableHead>Lugar</TableHead>
+                    <TableHead>Nombre</TableHead>
                     <TableHead>Personas</TableHead>
                     <TableHead className="text-right">Estado</TableHead>
                   </TableRow>

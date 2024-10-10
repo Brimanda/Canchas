@@ -23,6 +23,7 @@ export function ConfirmacionReservaComponent() {
   const tipo = searchParams.get('tipo') || 'No especificado';
   const canchaId = searchParams.get('cancha_id') || null;
   const userId = searchParams.get('user_id') || null;
+  const fecha = searchParams.get('fecha') || 'No especificado';
   const precio = searchParams.get('precio') || 'No especificado';
 
   const obtenerHoraActual = () => {
@@ -39,16 +40,14 @@ export function ConfirmacionReservaComponent() {
       return;
     }
 
-    const horaReserva = obtenerHoraActual(); 
-    const fechaReserva = obtenerHoraActual(); // Usar la fecha actual
+    const fechaReserva = obtenerHoraActual(); // Usar la fecha y hora actuales
 
     const { data, error } = await supabase.from('reservas').insert([
       {
-        user_id: userId,
-        cancha_id: parseInt(canchaId),
-        fecha: fechaReserva,  
-        hora: horaReserva.toISOString(),  
-        estado: 'pendiente',  
+        user_id: userId,                // ID del usuario
+        cancha_id: parseInt(canchaId),  // ID de la cancha
+        fecha: fechaReserva,             // Fecha y hora de la reserva
+        estado: 'pendiente',             // Estado inicial de la reserva
       },
     ]);
 
@@ -99,7 +98,7 @@ export function ConfirmacionReservaComponent() {
               <Calendar className="text-blue-500" />
               <div>
                 <p className="font-semibold">Fecha</p>
-                <p className="text-sm text-gray-600">{obtenerHoraActual().toLocaleDateString()}</p> 
+                <p className="text-sm text-gray-600">{fecha !== 'No especificado' ? new Date(fecha).toLocaleDateString() : fecha}</p> 
               </div>
             </div>
             <div className="flex items-center space-x-2">

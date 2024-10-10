@@ -35,8 +35,8 @@ export function HeroSectionComponent() {
           }`}
         />
       ))}
-      <div className="absolute inset-0 opacity-80 bg-negro backdrop-blur-2xl">
-        <div className="container mx-auto h-full flex flex-col justify-center items-start text-white p-4">
+      <div className="absolute inset-0 opacity-80 bg-negro backdrop-blur-2xl ">
+        <div className="container mx-auto h-full flex flex-col justify-center items-start text-blanco p-4">
           <motion.h1 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}

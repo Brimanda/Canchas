@@ -19,10 +19,12 @@ export function ConfirmacionReservaComponent() {
   const [userId, setUserId] = useState<string | null>(null);
 
   const nombre = searchParams.get('nombre') || 'No especificado';
+  const ubicacion = searchParams.get('ubicacion') || 'No especificado'; 
+  const capacidad = searchParams.get('capacidad') || 'No especificado'; 
   const tipo = searchParams.get('tipo') || 'No especificado';
   const canchaId = searchParams.get('cancha_id');
   const fecha = searchParams.get('fecha') || new Date().toISOString(); 
-  const precio = searchParams.get('precio') || 'No especificado';
+  const precio = searchParams.get('precio') || 'No especificado'; 
 
   const obtenerUsuario = async () => {
     const { data: { session }, error } = await supabase.auth.getSession();
@@ -61,6 +63,10 @@ export function ConfirmacionReservaComponent() {
         cancha_id: parseInt(canchaId), 
         fecha: fechaReserva,            
         estado: 'pendiente',            
+        nombre_cancha: nombre,         
+        ubicacion: ubicacion,           
+        capacidad: capacidad,          
+        precio: parseInt(precio)      
     }]);
   
     if (error) {
@@ -133,6 +139,20 @@ export function ConfirmacionReservaComponent() {
               <div>
                 <p className="font-semibold">Precio</p>
                 <p className="text-sm text-gray-600">${precio}</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Users className="text-blue-500" />
+              <div>
+                <p className="font-semibold">Ubicación</p>
+                <p className="text-sm text-gray-600">{ubicacion}</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Users className="text-blue-500" />
+              <div>
+                <p className="font-semibold">Capacidad</p>
+                <p className="text-sm text-gray-600">{capacidad}</p>
               </div>
             </div>
           </div>

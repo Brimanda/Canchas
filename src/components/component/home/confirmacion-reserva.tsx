@@ -41,7 +41,14 @@ export function ConfirmacionReservaComponent() {
     }
 
     const horaReserva = obtenerHoraActual(); 
-    const fechaReserva = new Date(fecha); 
+    const fechaReserva = new Date(fecha); // Asegúrate de que la fecha esté en un formato válido
+
+    // Verificar si la fecha se ha convertido correctamente
+    if (isNaN(fechaReserva.getTime())) {
+      setError('La fecha proporcionada no es válida.');
+      setLoading(false);
+      return;
+    }
 
     const { data, error } = await supabase.from('reservas').insert([
       {
@@ -100,7 +107,7 @@ export function ConfirmacionReservaComponent() {
               <Calendar className="text-blue-500" />
               <div>
                 <p className="font-semibold">Fecha</p>
-                <p className="text-sm text-gray-600">{fecha}</p> 
+                <p className="text-sm text-gray-600">{fecha !== 'No especificado' ? new Date(fecha).toLocaleDateString() : fecha}</p> 
               </div>
             </div>
             <div className="flex items-center space-x-2">

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Send, Phone, Mail, MapPin } from 'lucide-react'
 
-export function ContactComponentComponent() {
+export function ContactComponent() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')

@@ -4,7 +4,8 @@ const nextConfig = {
       remotePatterns: [
         {
           protocol: 'https',
-          hostname: 'sdhopbvwmexqitualize.supabase.co', 
+          hostname: 'sdhopbvwmexqitualize.supabase.co',
+          hostname: 'sportrent.vercel.app', 
         },
       ],
       

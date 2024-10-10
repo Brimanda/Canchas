@@ -1,5 +1,3 @@
-// api/profiles.ts
-
 import { supabase } from "./supabase";
 
 export const getUserProfile = async (userId: string) => {

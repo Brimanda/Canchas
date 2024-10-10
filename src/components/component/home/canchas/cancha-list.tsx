@@ -23,7 +23,7 @@ export function CanchasDeportivas() {
   const [filtroPrecioMax, setFiltroPrecioMax] = useState(60);
   const [filtroCapacidadMin, setFiltroCapacidadMin] = useState(0);
 
-  const router = useRouter(); 
+  const router = useRouter();
   const session = useSession();
 
   const toggleFiltroDeporte = (deporte: string) => {
@@ -37,7 +37,7 @@ export function CanchasDeportivas() {
   const canchasFiltradas = canchas.filter((cancha) => {
     return (
       (filtrosDeporte.length === 0 || filtrosDeporte.includes(cancha.tipo)) &&
-      (filtroDisponibilidad === "todas" || 
+      (filtroDisponibilidad === "todas" ||
        (filtroDisponibilidad === "disponibles" && cancha.disponible) ||
        (filtroDisponibilidad === "no disponibles" && !cancha.disponible)) &&
       cancha.precio <= filtroPrecioMax &&
@@ -71,6 +71,7 @@ export function CanchasDeportivas() {
     const userId = session?.user?.id; // Asegúrate de que la sesión y el usuario existen
 
     if (!userId) {
+      alert("Debes estar autenticado para reservar.");
       console.error("User ID no disponible");
       return;
     }
@@ -90,7 +91,6 @@ export function CanchasDeportivas() {
     console.log(queryParams.toString());
   };
   
-
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6 text-center text-primary">Canchas Deportivas</h1>

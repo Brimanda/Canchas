@@ -1,10 +1,8 @@
-'use client';
-
 import { useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Clock, Calendar, Users, DollarSign } from "lucide-react";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 // Crea una instancia del cliente de Supabase
@@ -18,13 +16,30 @@ export function ConfirmacionReservaComponent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const nombre = searchParams.get('nombre') || 'No especificado';
   const tipo = searchParams.get('tipo') || 'No especificado';
   const canchaId = searchParams.get('cancha_id');
-  const userId = searchParams.get('user_id');
   const fecha = searchParams.get('fecha') || new Date().toISOString(); 
   const precio = searchParams.get('precio') || 'No especificado';
+
+  // Función para obtener la sesión del usuario desde Supabase
+  const obtenerUsuario = async () => {
+    const { data: { session }, error } = await supabase.auth.getSession();
+
+    if (error) {
+      console.error("Error obteniendo la sesión:", error);
+      setError("Error obteniendo la sesión del usuario.");
+    } else if (session) {
+      setUserId(session.user.id);  // Guarda el userId en el estado
+    }
+  };
+
+  // Llamamos a obtenerUsuario cuando el componente se monta
+  useEffect(() => {
+    obtenerUsuario();
+  }, []);
 
   const obtenerHoraActual = () => {
     return new Date(); 
@@ -33,9 +48,6 @@ export function ConfirmacionReservaComponent() {
   const confirmarReserva = async () => {
     setLoading(true);
     setError(null);
-  
-    console.log("Cancha ID:", canchaId);
-    console.log("User ID:", userId);
   
     if (!canchaId || !userId) {
       setError('Faltan algunos datos necesarios para confirmar la reserva.');
@@ -46,14 +58,11 @@ export function ConfirmacionReservaComponent() {
     const fechaReserva = new Date(fecha); 
     const horaReserva = obtenerHoraActual(); 
   
-    console.log("Fecha Reserva:", fechaReserva);
-    console.log("Hora Reserva:", horaReserva);
-  
     const { data, error } = await supabase.from('reservas').insert([{
-        user_id: userId,                
-        cancha_id: parseInt(canchaId),  
-        fecha: fechaReserva,            
-        estado: 'pendiente',            
+        user_id: userId,                // ID del usuario que hace la reserva
+        cancha_id: parseInt(canchaId),  // ID de la cancha seleccionada
+        fecha: fechaReserva,            // Fecha de la reserva
+        estado: 'pendiente',            // Estado de la reserva inicial
     }]);
   
     if (error) {
@@ -131,7 +140,7 @@ export function ConfirmacionReservaComponent() {
           </div>
         </CardContent>
         <CardFooter>
-          <Button onClick={confirmarReserva} disabled={loading} className="w-full">
+          <Button onClick={confirmarReserva} disabled={loading || !userId} className="w-full">
             {loading ? "Confirmando..." : "Confirmar Reserva"}
           </Button>
         </CardFooter>

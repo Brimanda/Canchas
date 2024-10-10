@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,7 @@ export function CanchasDeportivas() {
   const [filtroCapacidadMin, setFiltroCapacidadMin] = useState(0);
 
   const router = useRouter();
-  const session = useSession(); // Obtiene la sesión actual
+  const session = useSession();
 
   const toggleFiltroDeporte = (deporte: string) => {
     setFiltrosDeporte(prev =>
@@ -50,7 +50,6 @@ export function CanchasDeportivas() {
       try {
         const canchaData = await getCanchas();
         setCanchas(canchaData);
-        console.log(session + "XD"); 
       } catch (err) {
         setError("Error al cargar los datos.");
         console.error(err);
@@ -62,11 +61,11 @@ export function CanchasDeportivas() {
   }, []);
 
   const handleReservar = (cancha: any) => {
-    const userId = session?.user?.id; // Verifica que la sesión y el usuario existen
+    const userEmail = session?.user?.email; // Obtener el email del usuario
 
-    if (!userId) {
+    if (!userEmail) {
       alert("Debes estar autenticado para reservar.");
-      console.error("User ID no disponible");
+      console.error("Email no disponible");
       return;
     }
 
@@ -77,8 +76,8 @@ export function CanchasDeportivas() {
       ubicacion: cancha.ubicacion,
       precio: cancha.precio.toString(),
       disponibilidad: cancha.disponibilidad.toString(),
-      cancha_id: cancha.id.toString(),
-      user_id: userId
+      cancha_id: cancha.id.toString(),  // Incluye el ID de la cancha
+      user_email: userEmail              // Incluye el email del usuario
     });
   
     router.push(`/confirmacion-reserva?${queryParams.toString()}`);

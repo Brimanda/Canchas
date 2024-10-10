@@ -9,9 +9,9 @@ export function HeroSectionComponent() {
   const [currentImage, setCurrentImage] = useState(0)
   const images = [
     '/canchababy.jpg?height=860&width=1920&text=Fútbol',
-    '/canchabasket.jpg?height=1080&width=1920&text=Basket',
-    '/canchavoleyplaya.jpg?height=1080&width=1920&text=Voley',
-    '/padel2.jpg?height=1080&width=1920&text=Padel'
+    '/canchabasket.jpg?height=860&width=1920&text=Basket',
+    '/canchavoleyplaya.jpg?height=860&width=1920&text=Voley',
+    '/padel2.jpg?height=860&width=1920&text=Padel'
   ]
 
   useEffect(() => {

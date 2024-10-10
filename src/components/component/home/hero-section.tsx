@@ -71,13 +71,6 @@ export function HeroSectionComponent() {
             <FeatureCard icon={<MapPin className="w-6 h-6" />} text="Múltiples ubicaciones" />
             <FeatureCard icon={<Users className="w-6 h-6" />} text="Para todos los niveles" />
           </motion.div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold py-3 px-8 rounded-full text-lg transition duration-300 ease-in-out transform hover:shadow-lg"
-          >
-            Reserva tu Cancha
-          </motion.button>
         </div>
       </div>
     </div>

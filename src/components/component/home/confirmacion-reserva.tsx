@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Clock, Calendar, Users, DollarSign } from "lucide-react";
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 // Crea una instancia del cliente de Supabase
@@ -18,11 +18,11 @@ export function ConfirmacionReservaComponent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null); // Añadido para almacenar el ID del usuario
 
   const nombre = searchParams.get('nombre') || 'No especificado';
   const tipo = searchParams.get('tipo') || 'No especificado';
-  const canchaId = searchParams.get('cancha_id') || null;
+  const canchaId = searchParams.get('cancha_id');
+  const userId = searchParams.get('user_id');
   const fecha = searchParams.get('fecha') || new Date().toISOString(); 
   const precio = searchParams.get('precio') || 'No especificado';
 
@@ -49,14 +49,12 @@ export function ConfirmacionReservaComponent() {
     console.log("Fecha Reserva:", fechaReserva);
     console.log("Hora Reserva:", horaReserva);
   
-    const { data, error } = await supabase.from('reservas').insert([
-      {
+    const { data, error } = await supabase.from('reservas').insert([{
         user_id: userId,                
         cancha_id: parseInt(canchaId),  
         fecha: fechaReserva,             
         estado: 'pendiente',             
-      },
-    ]);
+    }]);
   
     if (error) {
       console.error('Error al insertar la reserva:', error);
@@ -68,17 +66,7 @@ export function ConfirmacionReservaComponent() {
   
     setLoading(false);
   };
-
-  // Obtener el ID del usuario autenticado
-  useEffect(() => {
-    const fetchUserId = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUserId(user?.id || null); // Establecer el ID del usuario
-    };
-
-    fetchUserId();
-  }, []);
-
+  
   if (success) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -123,14 +111,14 @@ export function ConfirmacionReservaComponent() {
               <Clock className="text-blue-500" />
               <div>
                 <p className="font-semibold">Hora</p>
-                <p className="text-sm text-gray-600">{obtenerHoraActual().toLocaleTimeString()}</p> 
+                <p className="text-sm text-gray-600">{new Date(fecha).toLocaleTimeString()}</p> 
               </div>
             </div>
             <div className="flex items-center space-x-2">
               <Users className="text-blue-500" />
               <div>
-                <p className="font-semibold">Cancha</p>
-                <p className="text-sm text-gray-600">{`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} - ${nombre}`}</p>
+                <p className="font-semibold">Nombre de la cancha</p>
+                <p className="text-sm text-gray-600">{nombre}</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
@@ -141,27 +129,10 @@ export function ConfirmacionReservaComponent() {
               </div>
             </div>
           </div>
-
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Proceso de confirmación:</h3>
-            <ol className="list-decimal list-inside space-y-2">
-              <li>Verifica que todos los detalles de la reserva sean correctos.</li>
-              <li>Asegúrate de que la fecha y hora seleccionadas te convengan.</li>
-              <li>Revisa el precio total de la reserva.</li>
-              <li>Lee y acepta los términos y condiciones de uso de la cancha.</li>
-              <li>Haz clic en el botón "Confirmar Reserva" para finalizar el proceso.</li>
-            </ol>
-          </div>
-
-          <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4">
-            <p className="text-yellow-700">
-              Nota: Una vez confirmada la reserva, aplicarán las políticas de cancelación y reembolso.
-            </p>
-          </div>
         </CardContent>
         <CardFooter>
-          <Button className="w-full text-lg py-6" size="lg" onClick={confirmarReserva} disabled={loading}>
-            {loading ? 'Confirmando...' : 'Confirmar Reserva'}
+          <Button onClick={confirmarReserva} disabled={loading} className="w-full">
+            {loading ? "Confirmando..." : "Confirmar Reserva"}
           </Button>
         </CardFooter>
       </Card>

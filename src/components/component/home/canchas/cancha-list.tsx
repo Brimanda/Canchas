@@ -1,30 +1,28 @@
 'use client';
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useAuth } from "@/components/component/auth/AuthProvider"; 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Toggle } from "@/components/ui/toggle";
 import { CalendarIcon, MapPinIcon, UsersIcon } from "lucide-react";
 import Image from "next/image";
 import { getCanchas } from "@/app/lib/canchas";
-import { useSession } from "@supabase/auth-helpers-react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const tiposDeporte = ["futbol", "tenis", "basquet", "voley"];
 
 export function CanchasDeportivas() {
+  const { session, isLoading } = useAuth(); // Obtener la sesión y el estado de carga del contexto
   const [canchas, setCanchas] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filtrosDeporte, setFiltrosDeporte] = useState<string[]>([]);
   const [filtroDisponibilidad, setFiltroDisponibilidad] = useState("todas");
   const [filtroPrecioMax, setFiltroPrecioMax] = useState(60);
   const [filtroCapacidadMin, setFiltroCapacidadMin] = useState(0);
-
   const router = useRouter();
-  const session = useSession();
 
   const toggleFiltroDeporte = (deporte: string) => {
     setFiltrosDeporte(prev =>
@@ -53,19 +51,17 @@ export function CanchasDeportivas() {
       } catch (err) {
         setError("Error al cargar los datos.");
         console.error(err);
-      } finally {
-        setIsLoading(false);
       }
     }
     fetchData();
   }, []);
 
   const handleReservar = (cancha: any) => {
-    const userEmail = session?.user?.email; // Obtener el email del usuario
+    const userId = session?.user?.id;
 
-    if (!userEmail) {
+    if (!userId) {
       alert("Debes estar autenticado para reservar.");
-      console.error("Email no disponible");
+      console.error("User ID no disponible");
       return;
     }
 
@@ -76,13 +72,17 @@ export function CanchasDeportivas() {
       ubicacion: cancha.ubicacion,
       precio: cancha.precio.toString(),
       disponibilidad: cancha.disponibilidad.toString(),
-      cancha_id: cancha.id.toString(),  // Incluye el ID de la cancha
-      user_email: userEmail              // Incluye el email del usuario
+      cancha_id: cancha.id.toString(),
+      user_id: userId
     });
   
     router.push(`/confirmacion-reserva?${queryParams.toString()}`);
     console.log(queryParams.toString());
   };
+
+  if (isLoading) {
+    return <p>Cargando...</p>;
+  }
 
   return (
     <div className="container mx-auto p-6">
@@ -145,9 +145,7 @@ export function CanchasDeportivas() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {isLoading ? (
-          <p>Cargando...</p>
-        ) : error ? (
+        {error ? (
           <p className="text-red-500">{error}</p>
         ) : canchasFiltradas.length === 0 ? (
           <p className="text-center">No se encontraron canchas con los filtros seleccionados.</p>

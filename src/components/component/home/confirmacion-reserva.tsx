@@ -40,13 +40,14 @@ export function ConfirmacionReservaComponent() {
       return;
     }
 
-    const horaReserva = obtenerHoraActual();
+    const horaReserva = obtenerHoraActual(); 
+    const fechaReserva = new Date(fecha); 
 
     const { data, error } = await supabase.from('reservas').insert([
       {
         user_id: userId,
         cancha_id: parseInt(canchaId),
-        fecha: new Date(fecha),
+        fecha: fechaReserva,  
         hora: horaReserva.toISOString(),  
         estado: 'pendiente',  
       },

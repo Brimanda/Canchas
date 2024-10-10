@@ -8,7 +8,6 @@ import { CheckCircle, Clock, Calendar, Users, DollarSign } from "lucide-react";
 export function ConfirmacionReservaComponent() {
   const searchParams = useSearchParams();
 
-  // Obtén los parámetros de la consulta
   const nombre = searchParams.get('nombre') || 'No especificado';
   const tipo = searchParams.get('tipo') || 'No especificado';
   const capacidad = searchParams.get('capacidad') || 'No especificada';

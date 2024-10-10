@@ -1,19 +1,75 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation'; // Importa useSearchParams
+import { useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Clock, Calendar, Users, DollarSign } from "lucide-react";
+import { useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
+
+// Crea una instancia del cliente de Supabase
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export function ConfirmacionReservaComponent() {
   const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const nombre = searchParams.get('nombre') || 'No especificado';
   const tipo = searchParams.get('tipo') || 'No especificado';
-  const capacidad = searchParams.get('capacidad') || 'No especificada';
-  const ubicacion = searchParams.get('ubicacion') || 'No especificada';
+  const canchaId = searchParams.get('cancha_id') || null;
+  const userId = searchParams.get('user_id') || null;
+  const fecha = searchParams.get('fecha') || 'No especificado';
   const precio = searchParams.get('precio') || 'No especificado';
-  const disponibilidad = searchParams.get('disponibilidad') === 'true' ? 'Disponible' : 'No disponible';
+
+  const confirmarReserva = async () => {
+    setLoading(true);
+    setError(null);
+
+    if (!canchaId || !userId || fecha === 'No especificado') {
+      setError('Faltan algunos datos necesarios para confirmar la reserva.');
+      setLoading(false);
+      return;
+    }
+
+    // Intenta insertar los datos en la tabla de reservas
+    const { data, error } = await supabase.from('reservas').insert([
+      {
+        user_id: userId,
+        cancha_id: parseInt(canchaId),
+        fecha: new Date(fecha),
+        estado: 'pendiente',  // Estado inicial
+      },
+    ]);
+
+    if (error) {
+      setError('Ocurrió un error al confirmar la reserva. Por favor, inténtalo de nuevo.');
+      console.error(error);
+    } else {
+      setSuccess(true);
+    }
+
+    setLoading(false);
+  };
+
+  if (success) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <Card className="w-full max-w-2xl">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-center">Reserva Confirmada</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-green-600">Tu reserva ha sido confirmada exitosamente.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -22,6 +78,11 @@ export function ConfirmacionReservaComponent() {
           <CardTitle className="text-2xl font-bold text-center">Confirmación de Reserva</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
+          {error && (
+            <div className="bg-red-100 border-l-4 border-red-500 p-4">
+              <p className="text-red-700">{error}</p>
+            </div>
+          )}
           <div className="bg-green-100 border-l-4 border-green-500 p-4 flex items-center">
             <CheckCircle className="text-green-500 mr-2" />
             <p className="text-green-700">Tu reserva está casi lista. Por favor, revisa los detalles.</p>
@@ -32,7 +93,7 @@ export function ConfirmacionReservaComponent() {
               <Calendar className="text-blue-500" />
               <div>
                 <p className="font-semibold">Fecha</p>
-                <p className="text-sm text-gray-600">15 de Octubre, 2023</p> 
+                <p className="text-sm text-gray-600">{fecha}</p> 
               </div>
             </div>
             <div className="flex items-center space-x-2">
@@ -76,8 +137,8 @@ export function ConfirmacionReservaComponent() {
           </div>
         </CardContent>
         <CardFooter>
-          <Button className="w-full text-lg py-6" size="lg">
-            Confirmar Reserva
+          <Button className="w-full text-lg py-6" size="lg" onClick={confirmarReserva} disabled={loading}>
+            {loading ? 'Confirmando...' : 'Confirmar Reserva'}
           </Button>
         </CardFooter>
       </Card>

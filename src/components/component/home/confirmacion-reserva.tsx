@@ -61,7 +61,7 @@ export function ConfirmacionReservaComponent() {
         user_id: userId,                
         cancha_id: parseInt(canchaId), 
         fecha: fechaReserva,            
-        estado: 'pendiente',            
+        estado: 'confirmada',            
         nombre_cancha: nombre,         
         ubicacion: ubicacion,           
         capacidad: capacidad,          

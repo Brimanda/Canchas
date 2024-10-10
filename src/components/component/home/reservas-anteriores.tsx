@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 type Reserva = {
   id: string;
   fecha: string;
+  nombre_cancha: string, 
   ubicacion: string;
   capacidad: number;
   estado: "confirmada" | "pendiente" | "cancelada";
@@ -128,6 +129,12 @@ export function ReservasAnteriores() {
                         <div className="flex items-center">
                           <MapPinIcon className="mr-2 h-4 w-4 text-sky-600" />
                           {reserva.ubicacion}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <MapPinIcon className="mr-2 h-4 w-4 text-sky-600" />
+                          {reserva.nombre_cancha}
                         </div>
                       </TableCell>
                       <TableCell>

@@ -60,13 +60,6 @@ export function CanchasDeportivas() {
     fetchData();
   }, []);
 
-  const transformedData = useMemo(() => {
-    return [...canchas].slice(0, 12).map(item => ({
-      ...item,
-      image_url: item.imagen && item.imagen.length > 0 ? item.imagen : "/placeholder.svg"
-    }));
-  }, [canchas]);
-
   const handleReservar = (cancha: any) => {
     const userId = session?.user?.id; // Asegúrate de que la sesión y el usuario existen
 
@@ -90,7 +83,7 @@ export function CanchasDeportivas() {
     router.push(`/confirmacion-reserva?${queryParams.toString()}`);
     console.log(queryParams.toString());
   };
-  
+
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6 text-center text-primary">Canchas Deportivas</h1>
@@ -153,7 +146,7 @@ export function CanchasDeportivas() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {isLoading ? (
-          <p>Loading...</p>
+          <p>Cargando...</p>
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : canchasFiltradas.length === 0 ? (

@@ -26,6 +26,10 @@ export function ConfirmacionReservaComponent() {
   const fecha = searchParams.get('fecha') || 'No especificado';
   const precio = searchParams.get('precio') || 'No especificado';
 
+  const obtenerHoraActual = () => {
+    return new Date(); 
+  };
+
   const confirmarReserva = async () => {
     setLoading(true);
     setError(null);
@@ -36,13 +40,15 @@ export function ConfirmacionReservaComponent() {
       return;
     }
 
-    // Intenta insertar los datos en la tabla de reservas
+    const horaReserva = obtenerHoraActual();
+
     const { data, error } = await supabase.from('reservas').insert([
       {
         user_id: userId,
         cancha_id: parseInt(canchaId),
         fecha: new Date(fecha),
-        estado: 'pendiente',  // Estado inicial
+        hora: horaReserva.toISOString(),  
+        estado: 'pendiente',  
       },
     ]);
 
@@ -100,7 +106,7 @@ export function ConfirmacionReservaComponent() {
               <Clock className="text-blue-500" />
               <div>
                 <p className="font-semibold">Hora</p>
-                <p className="text-sm text-gray-600">18:00 - 19:00</p> 
+                <p className="text-sm text-gray-600">{obtenerHoraActual().toLocaleTimeString()}</p> 
               </div>
             </div>
             <div className="flex items-center space-x-2">

@@ -43,7 +43,7 @@ export function Canchas() {
   return (
     <div>
       <br />
-      <CanchasDeportivas userId={""}/>
+      <CanchasDeportivas/>
     </div>
   )
 }

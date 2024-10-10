@@ -9,14 +9,9 @@ import { CalendarIcon, MapPinIcon, UsersIcon } from "lucide-react";
 import Image from "next/image";
 import { getCanchas } from "@/app/lib/canchas";
 
-// Define la interfaz para las props del componente
-interface CanchasDeportivasProps {
-  userId: string; // Define el tipo como string o el tipo que corresponda
-}
-
 const tiposDeporte = ["futbol", "tenis", "basquet", "voley"];
 
-export function CanchasDeportivas({ userId }: CanchasDeportivasProps) { // Usa la interfaz aquí
+export function CanchasDeportivas({ userId }) {  // Asegúrate de recibir el userId como prop
   const [canchas, setCanchas] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

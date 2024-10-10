@@ -1,51 +1,68 @@
 'use client'
 
-import { useState } from 'react'
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CalendarIcon, MapPinIcon, UsersIcon, SearchIcon } from "lucide-react"
-import { motion } from "framer-motion"
+import { useEffect, useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CalendarIcon, MapPinIcon, UsersIcon, SearchIcon } from "lucide-react";
+import { motion } from "framer-motion";
 
 type Reserva = {
-  id: string
-  fecha: string
-  lugar: string
-  personas: number
-  estado: "confirmada" | "pendiente" | "cancelada"
-}
+  id: string;
+  fecha: string;
+  lugar: string;
+  personas: number;
+  estado: "confirmada" | "pendiente" | "cancelada";
+};
 
-const reservas: Reserva[] = [
-  { id: "1", fecha: "2023-05-15", lugar: "Restaurante El Olivo", personas: 4, estado: "confirmada" },
-  { id: "2", fecha: "2023-06-20", lugar: "Café Central", personas: 2, estado: "pendiente" },
-  { id: "3", fecha: "2023-07-05", lugar: "Bar La Terraza", personas: 6, estado: "cancelada" },
-  { id: "4", fecha: "2023-08-10", lugar: "Restaurante Mar Azul", personas: 3, estado: "confirmada" },
-  { id: "5", fecha: "2023-09-15", lugar: "Pizzería Bella Italia", personas: 5, estado: "pendiente" },
-]
-
-const getBadgeColor = (estado: Reserva['estado']) => {
-  switch (estado) {
-    case "confirmada":
-      return "bg-green-500"
-    case "pendiente":
-      return "bg-yellow-500"
-    case "cancelada":
-      return "bg-red-500"
-    default:
-      return "bg-gray-500"
-  }
-}
+// Crear un cliente de Supabase
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export function ReservasAnteriores() {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [filterStatus, setFilterStatus] = useState<Reserva['estado'] | 'todas'>('todas')
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState<Reserva['estado'] | 'todas'>('todas');
+  const [reservas, setReservas] = useState<Reserva[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Función para obtener reservas de Supabase
+  const obtenerReservas = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('reservas') // Reemplaza 'reservas' con el nombre de tu tabla
+      .select('*');
+
+    if (error) {
+      console.error('Error al obtener reservas:', error);
+      setError('Ocurrió un error al cargar las reservas.');
+    } else {
+      setReservas(data as Reserva[]);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    obtenerReservas();
+  }, []);
 
   const filteredReservas = reservas.filter(reserva => 
     (reserva.lugar.toLowerCase().includes(searchTerm.toLowerCase()) ||
      reserva.fecha.includes(searchTerm)) &&
     (filterStatus === 'todas' || reserva.estado === filterStatus)
-  )
+  );
+
+  if (loading) {
+    return <div className="text-center">Cargando reservas...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-600 text-center">{error}</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-100 to-blue-200 py-12 px-4 sm:px-6 lg:px-8">
@@ -135,5 +152,18 @@ export function ReservasAnteriores() {
         </div>
       </div>
     </div>
-  )
+  );
+}
+
+const getBadgeColor = (estado: Reserva['estado']) => {
+  switch (estado) {
+    case "confirmada":
+      return "bg-green-500";
+    case "pendiente":
+      return "bg-yellow-500";
+    case "cancelada":
+      return "bg-red-500";
+    default:
+      return "bg-gray-500";
+  }
 }

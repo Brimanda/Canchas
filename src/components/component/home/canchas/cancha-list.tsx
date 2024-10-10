@@ -76,6 +76,7 @@ export function CanchasDeportivas() {
     });
   
     router.push(`/confirmacion-reserva?${queryParams.toString()}`);
+    console.log(queryParams.toString());
   };
   
 

@@ -23,7 +23,7 @@ export function ConfirmacionReservaComponent() {
   const tipo = searchParams.get('tipo') || 'No especificado';
   const canchaId = searchParams.get('cancha_id') || null;
   const userId = searchParams.get('user_id') || null;
-  const fecha = searchParams.get('fecha') || 'No especificado';
+  const fecha = searchParams.get('fecha') || new Date().toISOString(); 
   const precio = searchParams.get('precio') || 'No especificado';
 
   const obtenerHoraActual = () => {
@@ -99,7 +99,7 @@ export function ConfirmacionReservaComponent() {
               <Calendar className="text-blue-500" />
               <div>
                 <p className="font-semibold">Fecha</p>
-                <p className="text-sm text-gray-600">{fecha !== 'No especificado' ? new Date(fecha).toLocaleDateString() : fecha}</p> 
+                <p className="text-sm text-gray-600">{new Date(fecha).toLocaleDateString()}</p> 
               </div>
             </div>
             <div className="flex items-center space-x-2">

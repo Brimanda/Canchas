@@ -3,18 +3,45 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Send, Phone, Mail, MapPin } from 'lucide-react'
+import { Resend } from 'resend'
+
+const resend = new Resend(process.env.NEXT_PUBLIC_RESEND_API_KEY!)
 
 export function ContactComponent() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Form submitted:', { name, email, message })
-    setName('')
-    setEmail('')
-    setMessage('')
+    setLoading(true)
+    setError(null)
+
+    try {
+      await resend.emails.send({
+        from: email, // Correo del usuario
+        to: 'br.miranda@duocuc.cl', // Tu correo
+        subject: `Mensaje de contacto de ${name}`,
+        html: `
+          <p>Nombre: ${name}</p>
+          <p>Email: ${email}</p>
+          <p>Mensaje:</p>
+          <p>${message}</p>
+        `,
+      })
+      setSuccess(true)
+      setName('')
+      setEmail('')
+      setMessage('')
+    } catch (err) {
+      console.error('Error al enviar el correo:', err)
+      setError('Ocurrió un error al enviar el mensaje. Por favor, intenta de nuevo más tarde.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -55,6 +82,8 @@ export function ContactComponent() {
           </div>
           <div className="p-8 md:w-1/2">
             <h3 className="text-2xl font-semibold mb-6">Envíanos un mensaje</h3>
+            {success && <div className="bg-green-100 text-green-700 p-4 rounded mb-4">Tu mensaje ha sido enviado exitosamente.</div>}
+            {error && <div className="bg-red-100 text-red-700 p-4 rounded mb-4">{error}</div>}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -100,8 +129,9 @@ export function ContactComponent() {
                 className="w-full bg-sky-600 text-white py-2 px-4 rounded-md hover:bg-sky-700 transition duration-300 ease-in-out flex items-center justify-center"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                disabled={loading}
               >
-                Enviar mensaje
+                {loading ? "Enviando..." : "Enviar mensaje"}
                 <Send className="w-5 h-5 ml-2" />
               </motion.button>
             </form>

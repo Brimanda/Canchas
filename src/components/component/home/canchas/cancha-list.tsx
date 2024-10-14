@@ -6,7 +6,7 @@ import { useAuth } from "@/components/component/auth/AuthProvider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Toggle } from "@/components/ui/toggle";
-import { CalendarIcon, MapPinIcon, UsersIcon } from "lucide-react";
+import { CalendarIcon, MapPinIcon, UsersIcon, Star } from "lucide-react";
 import Image from "next/image";
 import { getCanchas } from "@/app/lib/canchas";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,13 +15,14 @@ import { Button } from "@/components/ui/button";
 const tiposDeporte = ["futbol", "tenis", "basquet", "voley"];
 
 export function CanchasDeportivas() {
-  const { session, isLoading } = useAuth(); // Obtener la sesión y el estado de carga del contexto
+  const { session, isLoading } = useAuth();
   const [canchas, setCanchas] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [filtrosDeporte, setFiltrosDeporte] = useState<string[]>([]);
   const [filtroDisponibilidad, setFiltroDisponibilidad] = useState("todas");
   const [filtroPrecioMax, setFiltroPrecioMax] = useState(60);
   const [filtroCapacidadMin, setFiltroCapacidadMin] = useState(0);
+  const [ratings, setRatings] = useState<{[key: number]: number}>({});
   const router = useRouter();
 
   const toggleFiltroDeporte = (deporte: string) => {
@@ -48,6 +49,12 @@ export function CanchasDeportivas() {
       try {
         const canchaData = await getCanchas();
         setCanchas(canchaData);
+        // Initialize ratings
+        const initialRatings = canchaData.reduce((acc: {[key: number]: number}, cancha: any) => {
+          acc[cancha.id] = 0;
+          return acc;
+        }, {});
+        setRatings(initialRatings);
       } catch (err) {
         setError("Error al cargar los datos.");
         console.error(err);
@@ -78,6 +85,12 @@ export function CanchasDeportivas() {
   
     router.push(`/confirmacion-reserva?${queryParams.toString()}`);
     console.log(queryParams.toString());
+  };
+
+  const handleRating = (canchaId: number, rating: number) => {
+    setRatings(prev => ({...prev, [canchaId]: rating}));
+    // Here you would typically send this rating to your backend
+    console.log(`Cancha ${canchaId} rated ${rating} stars`);
   };
 
   if (isLoading) {
@@ -174,9 +187,20 @@ export function CanchasDeportivas() {
                   <MapPinIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                   <span>Ubicación: {cancha.ubicacion}</span>
                 </div>
-                <div className="flex items-center">
+                <div className="flex items-center mb-2">
                   <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                   <span>Disponibilidad: {cancha.disponibilidad ? "Disponible" : "No disponible"}</span>
+                </div>
+                <div className="flex items-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className={`h-5 w-5 cursor-pointer ${
+                        star <= ratings[cancha.id] ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                      }`}
+                      onClick={() => handleRating(cancha.id, star)}
+                    />
+                  ))}
                 </div>
               </CardContent>
               <CardFooter className="bg-muted/50 flex justify-between items-center">

@@ -49,7 +49,6 @@ export function CanchasDeportivas() {
       try {
         const canchaData = await getCanchas();
         setCanchas(canchaData);
-        // Initialize ratings
         const initialRatings = canchaData.reduce((acc: {[key: number]: {rating: number, total: number}}, cancha: any) => {
           acc[cancha.id] = { rating: 0, total: 0 };
           return acc;

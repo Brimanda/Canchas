@@ -5,7 +5,6 @@ const nextConfig = {
         {
           protocol: 'https',
           hostname: 'sdhopbvwmexqitualize.supabase.co',
-          hostname: 'sportrent.vercel.app', 
         },
       ],
       

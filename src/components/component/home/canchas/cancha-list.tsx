@@ -9,7 +9,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { CalendarIcon, MapPinIcon, UsersIcon, Star } from "lucide-react";
 import Image from "next/image";
 import { getCanchas } from "@/app/lib/canchas";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 const tiposDeporte = ["futbol", "tenis", "basquet", "voley"];
@@ -22,7 +22,7 @@ export function CanchasDeportivas() {
   const [filtroDisponibilidad, setFiltroDisponibilidad] = useState("todas");
   const [filtroPrecioMax, setFiltroPrecioMax] = useState(60);
   const [filtroCapacidadMin, setFiltroCapacidadMin] = useState(0);
-  const [ratings, setRatings] = useState<{[key: number]: number}>({});
+  const [ratings, setRatings] = useState<{[key: number]: {rating: number, total: number}}>({});
   const router = useRouter();
 
   const toggleFiltroDeporte = (deporte: string) => {
@@ -50,8 +50,8 @@ export function CanchasDeportivas() {
         const canchaData = await getCanchas();
         setCanchas(canchaData);
         // Initialize ratings
-        const initialRatings = canchaData.reduce((acc: {[key: number]: number}, cancha: any) => {
-          acc[cancha.id] = 0;
+        const initialRatings = canchaData.reduce((acc: {[key: number]: {rating: number, total: number}}, cancha: any) => {
+          acc[cancha.id] = { rating: 0, total: 0 };
           return acc;
         }, {});
         setRatings(initialRatings);
@@ -88,7 +88,13 @@ export function CanchasDeportivas() {
   };
 
   const handleRating = (canchaId: number, rating: number) => {
-    setRatings(prev => ({...prev, [canchaId]: rating}));
+    setRatings(prev => ({
+      ...prev,
+      [canchaId]: {
+        rating: rating,
+        total: (prev[canchaId]?.total || 0) + 1
+      }
+    }));
     // Here you would typically send this rating to your backend
     console.log(`Cancha ${canchaId} rated ${rating} stars`);
   };
@@ -179,18 +185,6 @@ export function CanchasDeportivas() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-4">
-              <div className="flex items-center">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className={`h-5 w-5 cursor-pointer ${
-                        star <= ratings[cancha.id] ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                      }`}
-                      onClick={() => handleRating(cancha.id, star)}
-                    />
-                  ))}
-                </div>
-                <br />
                 <div className="flex items-center mb-2">
                   <UsersIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                   <span>Capacidad: {cancha.capacidad} personas</span>
@@ -202,6 +196,18 @@ export function CanchasDeportivas() {
                 <div className="flex items-center mb-2">
                   <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                   <span>Disponibilidad: {cancha.disponibilidad ? "Disponible" : "No disponible"}</span>
+                </div>
+                <div className="flex items-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className={`h-5 w-5 cursor-pointer ${
+                        star <= ratings[cancha.id]?.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                      }`}
+                      onClick={() => handleRating(cancha.id, star)}
+                    />
+                  ))}
+                  <span className="ml-2 text-sm text-gray-600">({ratings[cancha.id]?.total || 0})</span>
                 </div>
               </CardContent>
               <CardFooter className="bg-muted/50 flex justify-between items-center">

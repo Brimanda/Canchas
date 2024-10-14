@@ -95,7 +95,6 @@ export function CanchasDeportivas() {
         total: (prev[canchaId]?.total || 0) + 1
       }
     }));
-    // Here you would typically send this rating to your backend
     console.log(`Cancha ${canchaId} rated ${rating} stars`);
   };
 
@@ -172,7 +171,7 @@ export function CanchasDeportivas() {
           canchasFiltradas.map((cancha) => (
             <Card key={cancha.id} className="overflow-hidden transition-shadow hover:shadow-lg">
               <Image
-                src={cancha.imagen.url}
+                src={cancha.imagen.url || "placeholder.svg"}
                 alt={cancha.nombre}
                 width={300}
                 height={200}

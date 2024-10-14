@@ -76,6 +76,7 @@ export function CanchasDeportivas() {
       tipo: cancha.tipo,
       capacidad: cancha.capacidad.toString(),
       ubicacion: cancha.ubicacion,
+      imagen: cancha.imagen,
       precio: cancha.precio.toString(),
       disponibilidad: cancha.disponibilidad.toString(),
       cancha_id: cancha.id.toString(),
@@ -171,7 +172,7 @@ export function CanchasDeportivas() {
           canchasFiltradas.map((cancha) => (
             <Card key={cancha.id} className="overflow-hidden transition-shadow hover:shadow-lg">
               <Image
-                src={cancha.imagen.url || "/placeholder.svg"}
+                src={cancha.imagen.url}
                 alt={cancha.nombre}
                 width={300}
                 height={200}

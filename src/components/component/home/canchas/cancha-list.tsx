@@ -179,6 +179,17 @@ export function CanchasDeportivas() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-4">
+              <div className="flex items-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className={`h-5 w-5 cursor-pointer ${
+                        star <= ratings[cancha.id] ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                      }`}
+                      onClick={() => handleRating(cancha.id, star)}
+                    />
+                  ))}
+                </div>
                 <div className="flex items-center mb-2">
                   <UsersIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                   <span>Capacidad: {cancha.capacidad} personas</span>
@@ -190,17 +201,6 @@ export function CanchasDeportivas() {
                 <div className="flex items-center mb-2">
                   <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                   <span>Disponibilidad: {cancha.disponibilidad ? "Disponible" : "No disponible"}</span>
-                </div>
-                <div className="flex items-center">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className={`h-5 w-5 cursor-pointer ${
-                        star <= ratings[cancha.id] ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                      }`}
-                      onClick={() => handleRating(cancha.id, star)}
-                    />
-                  ))}
                 </div>
               </CardContent>
               <CardFooter className="bg-muted/50 flex justify-between items-center">

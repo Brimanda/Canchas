@@ -22,7 +22,6 @@ export function CanchasDeportivas() {
   const [filtroDisponibilidad, setFiltroDisponibilidad] = useState("todas");
   const [filtroPrecioMax, setFiltroPrecioMax] = useState(60);
   const [filtroCapacidadMin, setFiltroCapacidadMin] = useState(0);
-  const [ratings, setRatings] = useState<{ [key: number]: { rating: number, total: number } }>({});
   const router = useRouter();
 
   const toggleFiltroDeporte = (deporte: string) => {
@@ -49,11 +48,6 @@ export function CanchasDeportivas() {
       try {
         const canchaData = await getCanchas();
         setCanchas(canchaData);
-        const initialRatings = canchaData.reduce((acc: { [key: number]: { rating: number, total: number } }, cancha: any) => {
-          acc[cancha.id] = { rating: 0, total: 0 };
-          return acc;
-        }, {});
-        setRatings(initialRatings);
       } catch (err) {
         setError("Error al cargar los datos.");
         console.error(err);
@@ -85,17 +79,6 @@ export function CanchasDeportivas() {
 
     router.push(`/confirmacion-reserva?${queryParams.toString()}`);
     console.log(queryParams.toString());
-  };
-
-  const handleRating = (canchaId: number, rating: number) => {
-    setRatings(prev => ({
-      ...prev,
-      [canchaId]: {
-        rating: rating,
-        total: (prev[canchaId]?.total || 0) + 1
-      }
-    }));
-    console.log(`Cancha ${canchaId} rated ${rating} stars`);
   };
 
   if (isLoading) {
@@ -184,18 +167,6 @@ export function CanchasDeportivas() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-4">
-                <div className="flex items-center">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className={`h-5 w-5 cursor-pointer ${star <= (ratings[cancha.id]?.rating || 0) ? 'text-amarillo' : 'text-gray-300'
-                        }`}
-                      onClick={() => handleRating(cancha.id, star)} 
-                    />
-                  ))}
-                  <span className="ml-2 text-sm text-gray-600">({ratings[cancha.id]?.total || 0} votos)</span>
-                </div>
-                <br />
                 <div className="flex items-center mb-2">
                   <UsersIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                   <span>Capacidad: {cancha.capacidad} personas</span>

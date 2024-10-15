@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/component/auth/AuthProvider"; 
@@ -20,7 +22,7 @@ export function CanchasDeportivas() {
   const [filtroDisponibilidad, setFiltroDisponibilidad] = useState("todas");
   const [filtroPrecioMax, setFiltroPrecioMax] = useState(60);
   const [filtroCapacidadMin, setFiltroCapacidadMin] = useState(0);
-  const [ratings, setRatings] = useState<{[key: number]: {rating: number, total: number, comentario: string | null}}>({}); // Añadido 'comentario'
+  const [ratings, setRatings] = useState<{[key: number]: {rating: number, total: number}}>({});
   const router = useRouter();
 
   const toggleFiltroDeporte = (deporte: string) => {
@@ -47,8 +49,8 @@ export function CanchasDeportivas() {
       try {
         const canchaData = await getCanchas();
         setCanchas(canchaData);
-        const initialRatings = canchaData.reduce((acc: {[key: number]: {rating: number, total: number, comentario: string | null}}, cancha: any) => {
-          acc[cancha.id] = { rating: 0, total: 0, comentario: null }; // Inicializa el comentario
+        const initialRatings = canchaData.reduce((acc: {[key: number]: {rating: number, total: number}}, cancha: any) => {
+          acc[cancha.id] = { rating: 0, total: 0 };
           return acc;
         }, {});
         setRatings(initialRatings);
@@ -78,25 +80,22 @@ export function CanchasDeportivas() {
       precio: cancha.precio.toString(),
       disponibilidad: cancha.disponibilidad.toString(),
       cancha_id: cancha.id.toString(),
-      user_id: userId,
-      puntuacion: ratings[cancha.id]?.rating?.toString() ?? '0',
-      comentario: ratings[cancha.id]?.comentario ?? '' 
-  });
-
+      user_id: userId
+    });
+  
     router.push(`/confirmacion-reserva?${queryParams.toString()}`);
     console.log(queryParams.toString());
   };
 
-  const handleRating = (canchaId: number, rating: number, comentario: string | null) => {
+  const handleRating = (canchaId: number, rating: number) => {
     setRatings(prev => ({
       ...prev,
       [canchaId]: {
         rating: rating,
-        total: (prev[canchaId]?.total || 0) + 1,
-        comentario // Aquí se almacena el comentario
+        total: (prev[canchaId]?.total || 0) + 1
       }
     }));
-    console.log(`Cancha ${canchaId} rated ${rating} stars with comment: ${comentario}`);
+    console.log(`Cancha ${canchaId} rated ${rating} stars`);
   };
 
   if (isLoading) {
@@ -185,38 +184,39 @@ export function CanchasDeportivas() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-4">
-                <div className="flex items-center">
+              <div className="flex items-center">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
                       key={star}
                       className={`h-5 w-5 cursor-pointer ${
                         star <= ratings[cancha.id]?.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
                       }`}
-                      onClick={() => handleRating(cancha.id, star, ratings[cancha.id]?.comentario)} 
+                      onClick={() => handleRating(cancha.id, star)}
                     />
                   ))}
                   <span className="ml-2 text-sm text-gray-600">({ratings[cancha.id]?.total || 0})</span>
                 </div>
                 <br />
-                <div className="flex items-center">
-                  <UsersIcon className="h-5 w-5 text-gray-500" />
-                  <span className="ml-2">Capacidad: {cancha.capacidad} personas</span>
+                <div className="flex items-center mb-2">
+                  <UsersIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <span>Capacidad: {cancha.capacidad} personas</span>
                 </div>
-                <div className="flex items-center">
-                  <MapPinIcon className="h-5 w-5 text-gray-500" />
-                  <span className="ml-2">Ubicación{cancha.ubicacion}</span>
+                <div className="flex items-center mb-2">
+                  <MapPinIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <span>Ubicación: {cancha.ubicacion}</span>
                 </div>
-                <div className="flex items-center">
-                  <CalendarIcon className="h-5 w-5 text-gray-500" />
-                  <span className="ml-2">Precio: ${cancha.precio} por hora</span>
+                <div className="flex items-center mb-2">
+                  <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <span>Disponibilidad: {cancha.disponibilidad ? "Disponible" : "No disponible"}</span>
                 </div>
               </CardContent>
-              <CardFooter>
+              <CardFooter className="bg-muted/50 flex justify-between items-center">
+                <span className="text-lg font-semibold">${cancha.precio}/hora</span>
                 <Button
-                  variant="outline"
-                  onClick={() => handleReservar(cancha)}
+                  disabled={!cancha.disponibilidad}
+                  onClick={() => handleReservar(cancha)} 
                 >
-                  Reservar
+                  {cancha.disponibilidad ? "Reservar" : "No disponible"}
                 </Button>
               </CardFooter>
             </Card>

@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     const { data, error } = await resend.emails.send({
       from: 'SportRent <onboarding@resend.dev>',
       to: [email],  
-      subject: 'Confirmación de Reserva',
+      subject: 'Confirmación Reserva',
       react: EmailTemplate({ 
         nombre: name, 
         fecha, 

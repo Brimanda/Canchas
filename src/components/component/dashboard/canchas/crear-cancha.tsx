@@ -11,7 +11,6 @@ import { MapPin, Users, DollarSign, Image } from "lucide-react"
 import { supabase } from "@/app/lib/supabase";
 import { createCancha } from "@/app/lib/canchas";
 
-
 export function CrearCanchaComponent() {
   const [nombre, setNombre] = useState("");
   const [tipo, setTipo] = useState("");
@@ -28,7 +27,6 @@ export function CrearCanchaComponent() {
   const supabaseStorageUrl = process.env.NEXT_PUBLIC_SUPABASE_URL + "/storage/v1/object/public";
 
   useEffect(() => {
-    // Obtener el usuario autenticado y almacenar su ID
     const fetchUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {

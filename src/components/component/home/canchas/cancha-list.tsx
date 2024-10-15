@@ -9,7 +9,6 @@ import { Toggle } from "@/components/ui/toggle";
 import { CalendarIcon, MapPinIcon, UsersIcon, Star } from "lucide-react";
 import Image from "next/image";
 import { getCanchas } from "@/app/lib/canchas";
-import { insertarPuntuacion, getPuntuacionesPorCancha } from "@/app/lib/puntuaciones"; 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -50,18 +49,10 @@ export function CanchasDeportivas() {
       try {
         const canchaData = await getCanchas();
         setCanchas(canchaData);
-        
-        // Obtener puntuaciones para cada cancha
-        const puntuacionesPromises = canchaData.map(cancha => getPuntuacionesPorCancha(cancha.id));
-        const puntuacionesResults = await Promise.all(puntuacionesPromises);
-        
-        const initialRatings = canchaData.reduce((acc: {[key: number]: {rating: number, total: number}}, cancha: any, index: number) => {
-          const puntuaciones = puntuacionesResults[index];
-          const totalRatings = puntuaciones.reduce((sum, p) => sum + p.puntuacion, 0);
-          acc[cancha.id] = { rating: totalRatings / puntuaciones.length || 0, total: puntuaciones.length };
+        const initialRatings = canchaData.reduce((acc: {[key: number]: {rating: number, total: number}}, cancha: any) => {
+          acc[cancha.id] = { rating: 0, total: 0 };
           return acc;
         }, {});
-        
         setRatings(initialRatings);
       } catch (err) {
         setError("Error al cargar los datos.");
@@ -96,37 +87,15 @@ export function CanchasDeportivas() {
     console.log(queryParams.toString());
   };
 
-  const handleRating = async (canchaId: number, rating: number) => {
-    const userId = session?.user?.id;
-
-    if (!userId) {
-      alert("Debes estar autenticado para calificar.");
-      return;
-    }
-
-    // Inserta la puntuación en la base de datos
-    try {
-      await insertarPuntuacion({
-        reserva_id: null,  // Deberías asociarlo a una reserva si es necesario
-        usuario_id: userId,
-        cancha_id: canchaId,
-        puntuacion: rating,
-        comentario: 'Sin comentario',  // Puedes agregar un campo de comentario si deseas
-      });
-
-      // Actualiza el estado local para reflejar la nueva puntuación
-      setRatings(prev => ({
-        ...prev,
-        [canchaId]: {
-          rating: rating,
-          total: (prev[canchaId]?.total || 0) + 1
-        }
-      }));
-      console.log(`Cancha ${canchaId} calificada con ${rating} estrellas`);
-    } catch (error) {
-      console.error("Error al registrar la puntuación", error);
-      alert("Ocurrió un error al registrar la puntuación");
-    }
+  const handleRating = (canchaId: number, rating: number) => {
+    setRatings(prev => ({
+      ...prev,
+      [canchaId]: {
+        rating: rating,
+        total: (prev[canchaId]?.total || 0) + 1
+      }
+    }));
+    console.log(`Cancha ${canchaId} rated ${rating} stars`);
   };
 
   if (isLoading) {
@@ -208,27 +177,47 @@ export function CanchasDeportivas() {
                 height={200}
                 className="w-full h-48 object-cover"
               />
-              <CardHeader className="bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 text-white py-2 px-4">
+              <CardHeader className="bg-gradient-to-r from-celeste-claro to-secondary text-white">
                 <CardTitle>{cancha.nombre}</CardTitle>
-                <CardDescription>
-                  <MapPinIcon className="inline-block w-4 h-4 mr-1" /> {cancha.ubicacion}
+                <CardDescription className="text-primary-foreground">
+                  {cancha.tipo.charAt(0).toUpperCase() + cancha.tipo.slice(1)}
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-4">
-                <p className="flex items-center mb-2">
-                  <UsersIcon className="w-4 h-4 mr-2" /> Capacidad: {cancha.capacidad} personas
-                </p>
-                <p className="flex items-center mb-2">
-                  <CalendarIcon className="w-4 h-4 mr-2" /> {cancha.disponible ? "Disponible" : "No disponible"}
-                </p>
-                <p className="flex items-center mb-2">
-                  <Star className="w-4 h-4 mr-2" /> {ratings[cancha.id]?.rating.toFixed(1)} ({ratings[cancha.id]?.total} valoraciones)
-                </p>
-                <p className="text-lg font-semibold mb-4">${cancha.precio}</p>
+              <div className="flex items-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className={`h-5 w-5 cursor-pointer ${
+                        star <= ratings[cancha.id]?.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                      }`}
+                      onClick={() => handleRating(cancha.id, star)}
+                    />
+                  ))}
+                  <span className="ml-2 text-sm text-gray-600">({ratings[cancha.id]?.total || 0})</span>
+                </div>
+                <br />
+                <div className="flex items-center mb-2">
+                  <UsersIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <span>Capacidad: {cancha.capacidad} personas</span>
+                </div>
+                <div className="flex items-center mb-2">
+                  <MapPinIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <span>Ubicación: {cancha.ubicacion}</span>
+                </div>
+                <div className="flex items-center mb-2">
+                  <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <span>Disponibilidad: {cancha.disponibilidad ? "Disponible" : "No disponible"}</span>
+                </div>
               </CardContent>
-              <CardFooter className="flex justify-between items-center p-4">
-                <Button variant="default" onClick={() => handleReservar(cancha)}>Reservar</Button>
-                <Button variant="secondary" onClick={() => handleRating(cancha.id, 5)}>Puntuar 5</Button>
+              <CardFooter className="bg-muted/50 flex justify-between items-center">
+                <span className="text-lg font-semibold">${cancha.precio}/hora</span>
+                <Button
+                  disabled={!cancha.disponibilidad}
+                  onClick={() => handleReservar(cancha)} 
+                >
+                  {cancha.disponibilidad ? "Reservar" : "No disponible"}
+                </Button>
               </CardFooter>
             </Card>
           ))

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/components/component/auth/AuthProvider"; 
+import { useAuth } from "@/components/component/auth/AuthProvider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Toggle } from "@/components/ui/toggle";
@@ -22,7 +22,7 @@ export function CanchasDeportivas() {
   const [filtroDisponibilidad, setFiltroDisponibilidad] = useState("todas");
   const [filtroPrecioMax, setFiltroPrecioMax] = useState(60);
   const [filtroCapacidadMin, setFiltroCapacidadMin] = useState(0);
-  const [ratings, setRatings] = useState<{[key: number]: {rating: number, total: number}}>({});
+  const [ratings, setRatings] = useState<{ [key: number]: { rating: number, total: number } }>({});
   const router = useRouter();
 
   const toggleFiltroDeporte = (deporte: string) => {
@@ -37,8 +37,8 @@ export function CanchasDeportivas() {
     return (
       (filtrosDeporte.length === 0 || filtrosDeporte.includes(cancha.tipo)) &&
       (filtroDisponibilidad === "todas" ||
-       (filtroDisponibilidad === "disponibles" && cancha.disponible) ||
-       (filtroDisponibilidad === "no disponibles" && !cancha.disponible)) &&
+        (filtroDisponibilidad === "disponibles" && cancha.disponible) ||
+        (filtroDisponibilidad === "no disponibles" && !cancha.disponible)) &&
       cancha.precio <= filtroPrecioMax &&
       cancha.capacidad >= filtroCapacidadMin
     );
@@ -49,7 +49,7 @@ export function CanchasDeportivas() {
       try {
         const canchaData = await getCanchas();
         setCanchas(canchaData);
-        const initialRatings = canchaData.reduce((acc: {[key: number]: {rating: number, total: number}}, cancha: any) => {
+        const initialRatings = canchaData.reduce((acc: { [key: number]: { rating: number, total: number } }, cancha: any) => {
           acc[cancha.id] = { rating: 0, total: 0 };
           return acc;
         }, {});
@@ -82,7 +82,7 @@ export function CanchasDeportivas() {
       cancha_id: cancha.id.toString(),
       user_id: userId
     });
-  
+
     router.push(`/confirmacion-reserva?${queryParams.toString()}`);
     console.log(queryParams.toString());
   };
@@ -171,7 +171,7 @@ export function CanchasDeportivas() {
           canchasFiltradas.map((cancha) => (
             <Card key={cancha.id} className="overflow-hidden transition-shadow hover:shadow-lg">
               <Image
-                src={cancha.imagen[0] || "placeholder.svg"} 
+                src={cancha.imagen[0] || "placeholder.svg"}
                 alt={cancha.nombre}
                 width={300}
                 height={200}
@@ -184,17 +184,16 @@ export function CanchasDeportivas() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-4">
-              <div className="flex items-center">
+                <div className="flex items-center">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
                       key={star}
-                      className={`h-5 w-5 cursor-pointer ${
-                        star <= ratings[cancha.id]?.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                      }`}
-                      onClick={() => handleRating(cancha.id, star)}
+                      className={`h-5 w-5 cursor-pointer ${star <= (ratings[cancha.id]?.rating || 0) ? 'text-amarillo' : 'text-gray-300'
+                        }`}
+                      onClick={() => handleRating(cancha.id, star)} 
                     />
                   ))}
-                  <span className="ml-2 text-sm text-gray-600">({ratings[cancha.id]?.total || 0})</span>
+                  <span className="ml-2 text-sm text-gray-600">({ratings[cancha.id]?.total || 0} votos)</span>
                 </div>
                 <br />
                 <div className="flex items-center mb-2">
@@ -210,11 +209,12 @@ export function CanchasDeportivas() {
                   <span>Disponibilidad: {cancha.disponibilidad ? "Disponible" : "No disponible"}</span>
                 </div>
               </CardContent>
+
               <CardFooter className="bg-muted/50 flex justify-between items-center">
                 <span className="text-lg font-semibold">${cancha.precio}/hora</span>
                 <Button
                   disabled={!cancha.disponibilidad}
-                  onClick={() => handleReservar(cancha)} 
+                  onClick={() => handleReservar(cancha)}
                 >
                   {cancha.disponibilidad ? "Reservar" : "No disponible"}
                 </Button>

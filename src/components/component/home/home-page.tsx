@@ -1,11 +1,5 @@
-import { Eye, Link, Target } from "lucide-react";
 import React, { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import Logo from "./Logo";
 import { HeaderComponent } from "./header";
-import { AboutUsComponent } from "./about-us";
 import { FooterComponent } from "./footer";
 import Hero from "./hero";
 import WorksComponent from "./works";
@@ -44,26 +38,16 @@ const Home = () => {
     <div>
       <HeaderComponent/>
       {/* Carrito de Compras (Aun no) */}
-      {/* Carousel */}
       <Hero/>
       <br />
       <br />
 
-      {/* Sección Ultimas Añadidas */}
       <WorksComponent/>
-
       <PropertyTypes/>
-
-      {/* Sección Canchas Deportivas */}
       <Beneficios/>
-
-      {/* Sección Sobre Nosotros */}
-      
       <HeroSectionComponent/>
-
       <br />
 
-      {/* Footer */}
       <FooterComponent />
 
     </div>

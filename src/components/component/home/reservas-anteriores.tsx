@@ -63,9 +63,7 @@ export function ReservasAnteriores() {
 
   const handleRatingSubmit = async () => {
     if (selectedReserva) {
-      // Here you would typically send the rating and comment to your backend
       console.log(`Reserva ${selectedReserva.id} rated ${rating} stars. Comment: ${comment}`);
-      // Reset the form
       setRating(0);
       setComment('');
       setSelectedReserva(null);

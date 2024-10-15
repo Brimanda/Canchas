@@ -17,16 +17,14 @@ export function ConfirmacionReservaComponent() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
-  const [userEmail, setUserEmail] = useState<string | null>(null); // Obtener email del usuario
+  const [userEmail, setUserEmail] = useState<string | null>(null); 
 
-  // Datos de la reserva obtenidos de los parámetros de búsqueda
   const nombre = searchParams.get('nombre') || 'No especificado';
   const ubicacion = searchParams.get('ubicacion') || 'No especificado';
   const capacidad = searchParams.get('capacidad') || 'No especificado';
   const canchaId = searchParams.get('cancha_id');
   const fecha = searchParams.get('fecha') || new Date().toISOString();
 
-  // Función para obtener el usuario logueado
   const obtenerUsuario = async () => {
     const { data: { session }, error } = await supabase.auth.getSession();
 
@@ -35,7 +33,7 @@ export function ConfirmacionReservaComponent() {
       setError("Error obteniendo la sesión del usuario.");
     } else if (session) {
       setUserId(session.user.id);
-      setUserEmail(session.user.email ?? null); // Corregido: si el email es undefined, asigna null
+      setUserEmail(session.user.email ?? null); 
     }
   };
 
@@ -47,7 +45,6 @@ export function ConfirmacionReservaComponent() {
     return new Date();
   };
 
-  // Función para confirmar la reserva
   const confirmarReserva = async () => {
     setLoading(true);
     setError(null);
@@ -58,8 +55,8 @@ export function ConfirmacionReservaComponent() {
       return;
     }
 
-    const fechaReserva = new Date(fecha); // Fecha de la reserva
-    const horaReserva = obtenerHoraActual(); // Hora de la reserva
+    const fechaReserva = new Date(fecha); 
+    const horaReserva = obtenerHoraActual(); 
 
     const { data, error } = await supabase.from('reservas').insert([{
       user_id: userId,
@@ -105,7 +102,6 @@ export function ConfirmacionReservaComponent() {
     setLoading(false);
   };
 
-  // Renderizado de la confirmación de reserva
   if (success) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">

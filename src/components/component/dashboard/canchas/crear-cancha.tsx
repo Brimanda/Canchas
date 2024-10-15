@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -20,15 +20,34 @@ export function CrearCanchaComponent() {
   const [imageFiles, setImageFiles] = useState<FileList | null>(null);
   const [precio, setPrecio] = useState("");
   const [disponibilidad, setDisponibilidad] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null); 
 
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
   const supabaseStorageUrl = process.env.NEXT_PUBLIC_SUPABASE_URL + "/storage/v1/object/public";
 
+  useEffect(() => {
+    // Obtener el usuario autenticado y almacenar su ID
+    const fetchUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUserId(session.user.id); 
+      } else {
+        setError("No se ha encontrado un usuario autenticado.");
+      }
+    };
+    fetchUser();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+
+    if (!userId) {
+      setError("No se ha podido obtener el ID del usuario.");
+      return;
+    }
 
     try {
       if (!nombre || !tipo || !capacidad || !ubicacion || !precio) {
@@ -66,6 +85,7 @@ export function CrearCanchaComponent() {
         precio, 
         disponibilidad,
         imagen: imageUrls, 
+        propietario_id: userId, 
         created_at: new Date().toISOString()
       };
 
@@ -81,8 +101,6 @@ export function CrearCanchaComponent() {
   const handleCancel = () => {
     router.push("/dashboard/canchas"); 
   };
-
-  
 
   return (
     <div className="container mx-auto py-10">

@@ -1,4 +1,4 @@
-'use client'; 
+'use client';
 import { useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,14 +17,16 @@ export function ConfirmacionReservaComponent() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null); // Obtener email del usuario
 
+  // Datos de la reserva obtenidos de los parámetros de búsqueda
   const nombre = searchParams.get('nombre') || 'No especificado';
-  const ubicacion = searchParams.get('ubicacion') || 'No especificado'; 
-  const capacidad = searchParams.get('capacidad') || 'No especificado'; 
-  const tipo = searchParams.get('tipo') || 'No especificado';
+  const ubicacion = searchParams.get('ubicacion') || 'No especificado';
+  const capacidad = searchParams.get('capacidad') || 'No especificado';
   const canchaId = searchParams.get('cancha_id');
-  const fecha = searchParams.get('fecha') || new Date().toISOString(); 
+  const fecha = searchParams.get('fecha') || new Date().toISOString();
 
+  // Función para obtener el usuario logueado
   const obtenerUsuario = async () => {
     const { data: { session }, error } = await supabase.auth.getSession();
 
@@ -32,7 +34,8 @@ export function ConfirmacionReservaComponent() {
       console.error("Error obteniendo la sesión:", error);
       setError("Error obteniendo la sesión del usuario.");
     } else if (session) {
-      setUserId(session.user.id); 
+      setUserId(session.user.id);
+      setUserEmail(session.user.email ?? null); // Corregido: si el email es undefined, asigna null
     }
   };
 
@@ -41,43 +44,70 @@ export function ConfirmacionReservaComponent() {
   }, []);
 
   const obtenerHoraActual = () => {
-    return new Date(); 
+    return new Date();
   };
 
+  // Función para confirmar la reserva
   const confirmarReserva = async () => {
     setLoading(true);
     setError(null);
-  
+
     if (!canchaId || !userId) {
       setError('Faltan algunos datos necesarios para confirmar la reserva.');
       setLoading(false);
       return;
     }
-  
-    const fechaReserva = new Date(fecha); 
-    const horaReserva = obtenerHoraActual(); 
-  
+
+    const fechaReserva = new Date(fecha); // Fecha de la reserva
+    const horaReserva = obtenerHoraActual(); // Hora de la reserva
+
+    // Insertar la reserva en la base de datos
     const { data, error } = await supabase.from('reservas').insert([{
-        user_id: userId,                
-        cancha_id: parseInt(canchaId), 
-        fecha: fechaReserva,            
-        estado: 'confirmada',            
-        nombre_cancha: nombre,         
-        ubicacion: ubicacion,           
-        capacidad: capacidad,          
+      user_id: userId,
+      cancha_id: parseInt(canchaId),
+      fecha: fechaReserva,
+      estado: 'confirmada',
+      nombre_cancha: nombre,
+      ubicacion: ubicacion,
+      capacidad: capacidad,
     }]);
-  
+
     if (error) {
       console.error('Error al insertar la reserva:', error);
       setError('Ocurrió un error al confirmar la reserva. Por favor, inténtalo de nuevo.');
     } else {
       console.log('Reserva insertada:', data);
-      setSuccess(true); 
+      setSuccess(true);
+
+      // Enviar el correo de confirmación
+      try {
+        const response = await fetch('/api/sendEmail', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: nombre, // Nombre del usuario o cancha
+            email: userEmail, // Email del usuario
+            fecha: fechaReserva.toISOString().split('T')[0], // Fecha en formato YYYY-MM-DD
+            lugar: ubicacion, // Ubicación de la cancha
+            nombreCancha: nombre, // Nombre de la cancha
+            capacidad: capacidad // Capacidad de la cancha
+          })
+        });
+
+        if (!response.ok) {
+          console.error('Error al enviar el correo de confirmación');
+        }
+      } catch (err) {
+        console.error('Error en la solicitud de envío de correo:', err);
+      }
     }
-  
+
     setLoading(false);
   };
-  
+
+  // Renderizado de la confirmación de reserva
   if (success) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -115,14 +145,14 @@ export function ConfirmacionReservaComponent() {
               <Calendar className="text-blue-500" />
               <div>
                 <p className="font-semibold">Fecha</p>
-                <p className="text-sm text-gray-600">{new Date(fecha).toLocaleDateString()}</p> 
+                <p className="text-sm text-gray-600">{new Date(fecha).toLocaleDateString()}</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
               <Clock className="text-blue-500" />
               <div>
                 <p className="font-semibold">Hora</p>
-                <p className="text-sm text-gray-600">{new Date(fecha).toLocaleTimeString()}</p> 
+                <p className="text-sm text-gray-600">{new Date(fecha).toLocaleTimeString()}</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">

@@ -6,10 +6,7 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { CalendarIcon, MapPinIcon, UsersIcon, SearchIcon, Star } from "lucide-react";
+import { CalendarIcon, MapPinIcon, UsersIcon, SearchIcon } from "lucide-react";
 import { motion } from "framer-motion";
 
 type Reserva = {
@@ -32,9 +29,6 @@ export function ReservasAnteriores() {
   const [reservas, setReservas] = useState<Reserva[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedReserva, setSelectedReserva] = useState<Reserva | null>(null);
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState('');
 
   const obtenerReservas = async () => {
     setLoading(true);
@@ -60,17 +54,6 @@ export function ReservasAnteriores() {
      reserva.fecha.includes(searchTerm)) &&
     (filterStatus === 'todas' || reserva.estado === filterStatus)
   );
-
-  const handleRatingSubmit = async () => {
-    if (selectedReserva) {
-      // Here you would typically send the rating and comment to your backend
-      console.log(`Reserva ${selectedReserva.id} rated ${rating} stars. Comment: ${comment}`);
-      // Reset the form
-      setRating(0);
-      setComment('');
-      setSelectedReserva(null);
-    }
-  };
 
   if (loading) {
     return <div className="text-center">Cargando reservas...</div>;
@@ -126,8 +109,7 @@ export function ReservasAnteriores() {
                     <TableHead>Lugar</TableHead>
                     <TableHead>Nombre</TableHead>
                     <TableHead>Personas</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead className="text-right">Acción</TableHead>
+                    <TableHead className="text-right">Estado</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -162,47 +144,10 @@ export function ReservasAnteriores() {
                           {reserva.capacidad}
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-right">
                         <Badge className={`${getBadgeColor(reserva.estado)} text-white`}>
                           {reserva.estado}
                         </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => setSelectedReserva(reserva)}
-                            >
-                              Puntuar
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>Puntuar Reserva</DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                              <div className="flex items-center justify-center space-x-2">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                  <Star
-                                    key={star}
-                                    className={`h-8 w-8 cursor-pointer ${
-                                      star <= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                                    }`}
-                                    onClick={() => setRating(star)}
-                                  />
-                                ))}
-                              </div>
-                              <Textarea
-                                placeholder="Deja un comentario sobre tu experiencia..."
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}
-                              />
-                              <Button onClick={handleRatingSubmit}>Enviar Puntuación</Button>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
                       </TableCell>
                     </motion.tr>
                   ))}

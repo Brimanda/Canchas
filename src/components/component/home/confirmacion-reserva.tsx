@@ -61,7 +61,6 @@ export function ConfirmacionReservaComponent() {
     const fechaReserva = new Date(fecha); // Fecha de la reserva
     const horaReserva = obtenerHoraActual(); // Hora de la reserva
 
-    // Insertar la reserva en la base de datos
     const { data, error } = await supabase.from('reservas').insert([{
       user_id: userId,
       cancha_id: parseInt(canchaId),
@@ -79,7 +78,6 @@ export function ConfirmacionReservaComponent() {
       console.log('Reserva insertada:', data);
       setSuccess(true);
 
-      // Enviar el correo de confirmación
       try {
         const response = await fetch('/api/sendEmail', {
           method: 'POST',
@@ -87,12 +85,12 @@ export function ConfirmacionReservaComponent() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            name: nombre, // Nombre del usuario o cancha
-            email: userEmail, // Email del usuario
-            fecha: fechaReserva.toISOString().split('T')[0], // Fecha en formato YYYY-MM-DD
-            lugar: ubicacion, // Ubicación de la cancha
-            nombreCancha: nombre, // Nombre de la cancha
-            capacidad: capacidad // Capacidad de la cancha
+            name: nombre, 
+            email: userEmail, 
+            fecha: fechaReserva.toISOString().split('T')[0], 
+            lugar: ubicacion, 
+            nombreCancha: nombre, 
+            capacidad: capacidad 
           })
         });
 

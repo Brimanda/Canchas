@@ -210,8 +210,8 @@ export function CanchasDeportivas() {
                   <span>Disponibilidad: {cancha.disponibilidad ? "Disponible" : "No disponible"}</span>
                 </div>
               </CardContent>
-              <br />
               <CardFooter className="bg-muted/50 flex justify-between items-center">
+              <br />
                 <span className="text-lg font-semibold">${cancha.precio}/hora</span>
                 <Button
                   disabled={!cancha.disponibilidad}

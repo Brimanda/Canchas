@@ -1,10 +1,10 @@
-'use client';
 import { useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Clock, Calendar, Users } from "lucide-react";
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import { getUserFullName } from '@/app/lib/profiles'; 
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,6 +18,7 @@ export function ConfirmacionReservaComponent() {
   const [success, setSuccess] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null); 
+  const [userFullName, setUserFullName] = useState<string | null>(null); 
 
   const nombre = searchParams.get('nombre') || 'No especificado';
   const ubicacion = searchParams.get('ubicacion') || 'No especificado';
@@ -34,6 +35,9 @@ export function ConfirmacionReservaComponent() {
     } else if (session) {
       setUserId(session.user.id);
       setUserEmail(session.user.email ?? null); 
+      
+      const fullName = await getUserFullName(session.user.id);
+      setUserFullName(fullName); 
     }
   };
 
@@ -82,7 +86,7 @@ export function ConfirmacionReservaComponent() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            name: nombre, 
+            name: userFullName || 'Usuario', 
             email: userEmail, 
             fecha: fechaReserva.toISOString().split('T')[0], 
             lugar: ubicacion, 

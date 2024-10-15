@@ -4,19 +4,24 @@ import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
-  const { name, email, fecha, lugar, nombreCancha, capacidad } = await request.json();
-
   try {
+    const { userFullName, email, fecha, lugar, nombreCancha, capacidad } = await request.json(); 
+
+    if (!userFullName || !email || !fecha || !lugar || !nombreCancha || !capacidad) {
+      return new Response(JSON.stringify({ error: 'Faltan datos para enviar el correo' }), { status: 400 });
+    }
+
     const response = await resend.emails.send({
       from: 'SportRent <sportrent@turismodelvallespa.com>',
       to: [email],  
       subject: 'Confirmación de Reserva',
-      react: EmailTemplate({ 
-        nombre: name, 
-        fecha, 
-        lugar, 
-        nombreCancha, 
-        capacidad 
+      react: EmailTemplate({
+          userFullName,
+          fecha,
+          lugar,
+          nombreCancha,
+          capacidad,
+          nombre: ''
       }), 
     });
 

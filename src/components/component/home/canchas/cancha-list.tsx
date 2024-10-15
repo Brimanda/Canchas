@@ -171,7 +171,7 @@ export function CanchasDeportivas() {
           canchasFiltradas.map((cancha) => (
             <Card key={cancha.id} className="overflow-hidden transition-shadow hover:shadow-lg">
               <Image
-                src={cancha.imagen.url || "placeholder.svg"}
+                src={cancha.imagen[0] || "placeholder.svg"} 
                 alt={cancha.nombre}
                 width={300}
                 height={200}

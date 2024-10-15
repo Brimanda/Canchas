@@ -20,7 +20,7 @@ export function CanchasDeportivas() {
   const [error, setError] = useState<string | null>(null);
   const [filtrosDeporte, setFiltrosDeporte] = useState<string[]>([]);
   const [filtroDisponibilidad, setFiltroDisponibilidad] = useState("todas");
-  const [filtroPrecioMax, setFiltroPrecioMax] = useState(60);
+  const [filtroPrecioMax, setFiltroPrecioMax] = useState(0);
   const [filtroCapacidadMin, setFiltroCapacidadMin] = useState(0);
   const router = useRouter();
 

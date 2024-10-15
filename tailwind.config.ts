@@ -19,7 +19,7 @@ const config: Config = {
             'celeste-claro': '#30bae9',
             'blanco': '#ffff',
             'negro': '#000',
-            'amarillo': '#ffff00',
+            'amarillo': '#eeca06',
             'verde-claro': '#5bd959',
             "input": "hsl(var(--input))",
             "ring": "hsl(var(--ring))",

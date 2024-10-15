@@ -7,10 +7,10 @@ export async function POST(request: Request) {
   const { name, email, fecha, lugar, nombreCancha, capacidad } = await request.json();
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: 'Acme <onboarding@resend.dev>',
+    const response = await resend.emails.send({
+      from: 'SportRent <onboarding@resend.dev>',
       to: [email],  
-      subject: 'Confirmación Reserva',
+      subject: 'Confirmación de Reserva',
       react: EmailTemplate({ 
         nombre: name, 
         fecha, 
@@ -20,15 +20,20 @@ export async function POST(request: Request) {
       }), 
     });
 
-    if (error) {
-      console.log("Error al enviar el correo:", error);  
-      return new Response(JSON.stringify({ error }), { status: 500 });
+    console.log("Respuesta del servidor de Resend:", response);
+
+    // Si la respuesta contiene error, captúralo
+    if (response.error) {
+      console.log("Error al enviar el correo:", response.error);
+      return new Response(JSON.stringify({ error: response.error }), { status: 500 });
     }
 
-    console.log("Correo enviado exitosamente:", data);  
-    return new Response(JSON.stringify(data), { status: 200 });
+    // Si la respuesta es exitosa
+    return new Response(JSON.stringify(response), { status: 200 });
+    
   } catch (error) {
-    console.log("Error en el bloque catch:", error);  
-    return new Response(JSON.stringify({ error: 'Error enviando el correo' }), { status: 500 });
+    // Captura cualquier error en el proceso de envío
+    console.log("Error inesperado al enviar el correo:", error);
+    return new Response(JSON.stringify({ error: 'Error inesperado al enviar el correo' }), { status: 500 });
   }
 }

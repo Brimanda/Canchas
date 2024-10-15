@@ -21,11 +21,14 @@ export async function POST(request: Request) {
     });
 
     if (error) {
+      console.log("Error al enviar el correo:", error);  
       return new Response(JSON.stringify({ error }), { status: 500 });
     }
 
+    console.log("Correo enviado exitosamente:", data);  
     return new Response(JSON.stringify(data), { status: 200 });
   } catch (error) {
+    console.log("Error en el bloque catch:", error);  
     return new Response(JSON.stringify({ error: 'Error enviando el correo' }), { status: 500 });
   }
 }

@@ -192,7 +192,7 @@ export function CanchasDeportivas() {
                       className={`h-5 w-5 cursor-pointer ${
                         star <= ratings[cancha.id]?.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
                       }`}
-                      onClick={() => handleRating(cancha.id, star, ratings[cancha.id]?.comentario)} // Se puede añadir un comentario aquí si es necesario
+                      onClick={() => handleRating(cancha.id, star, ratings[cancha.id]?.comentario)} 
                     />
                   ))}
                   <span className="ml-2 text-sm text-gray-600">({ratings[cancha.id]?.total || 0})</span>
@@ -200,15 +200,15 @@ export function CanchasDeportivas() {
                 <br />
                 <div className="flex items-center">
                   <UsersIcon className="h-5 w-5 text-gray-500" />
-                  <span className="ml-2">{cancha.capacidad} personas</span>
+                  <span className="ml-2">Capacidad: {cancha.capacidad} personas</span>
                 </div>
                 <div className="flex items-center">
                   <MapPinIcon className="h-5 w-5 text-gray-500" />
-                  <span className="ml-2">{cancha.ubicacion}</span>
+                  <span className="ml-2">Ubicación{cancha.ubicacion}</span>
                 </div>
                 <div className="flex items-center">
                   <CalendarIcon className="h-5 w-5 text-gray-500" />
-                  <span className="ml-2">${cancha.precio} por hora</span>
+                  <span className="ml-2">Precio: ${cancha.precio} por hora</span>
                 </div>
               </CardContent>
               <CardFooter>

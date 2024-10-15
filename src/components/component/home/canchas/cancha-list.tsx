@@ -167,6 +167,16 @@ export function CanchasDeportivas() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-4">
+                <div className="flex items-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className={`h-5 w-5 ${star <= (cancha.puntuacion || 0) ? 'text-amarillo' : 'text-gray-300'}`}
+                    />
+                  ))}
+                  <span className="ml-2 text-sm text-gray-600">({cancha.total_puntuaciones || 0} votos)</span>
+                </div>
+                <br />
                 <div className="flex items-center mb-2">
                   <UsersIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                   <span>Capacidad: {cancha.capacidad} personas</span>

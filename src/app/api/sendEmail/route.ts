@@ -5,9 +5,9 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
-    const { userFullName, email, fecha, lugar, nombreCancha, capacidad } = await request.json(); 
+    const { name, email, fecha, lugar, nombreCancha, capacidad } = await request.json(); 
 
-    if (!userFullName || !email || !fecha || !lugar || !nombreCancha || !capacidad) {
+    if (!name || !email || !fecha || !lugar || !nombreCancha || !capacidad) {
       return new Response(JSON.stringify({ error: 'Faltan datos para enviar el correo' }), { status: 400 });
     }
 
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       to: [email],  
       subject: 'Confirmación de Reserva',
       react: EmailTemplate({
-          userFullName,
+          name: name,
           fecha,
           lugar,
           nombreCancha,

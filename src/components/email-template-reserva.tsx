@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 interface EmailTemplateProps {
-  userFullName: string;  
+  name: string;  
   nombre: string;
   fecha: string;
   lugar: string;
@@ -10,14 +10,14 @@ interface EmailTemplateProps {
 }
 
 export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({ 
-  userFullName, 
+  name, 
   fecha, 
   lugar, 
   nombreCancha, 
   capacidad 
 }) => (
   <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px', lineHeight: '1.6' }}>
-    <h3>¡Hola {userFullName}!</h3>
+    <h3>¡Hola {name}!</h3>
     <br />
     <p><strong>Tu reserva ha sido confirmada exitosamente.</strong></p>
     <p>A continuación, te proporcionamos los detalles de tu reserva:</p>
@@ -29,7 +29,7 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
     </ul>
     <p>Si tienes alguna duda, no dudes en contactar con nuestro equipo de soporte.</p>
     <br />
-    <a href="/pedidos" style={{ 
+    <a href="https://sportrent.vercel.app/pedidos" style={{ 
       display: 'inline-block', 
       padding: '10px 20px', 
       backgroundColor: '#4CAF50', 

@@ -87,7 +87,7 @@ export function ConfirmacionReservaComponent() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            name: userFullName || 'Usuario', 
+            name: userFullName, 
             email: userEmail, 
             fecha: fechaReserva.toISOString().split('T')[0], 
             lugar: ubicacion, 

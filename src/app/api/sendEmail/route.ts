@@ -5,37 +5,54 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
-    const { name, email, fecha, lugar, nombreCancha, capacidad } = await request.json(); 
+    const { name, email, fecha, lugar, nombreCancha, capacidad, propietarioEmail, propietarioName } = await request.json(); 
 
-    if (!name || !email || !fecha || !lugar || !nombreCancha || !capacidad) {
-      return new Response(JSON.stringify({ error: 'Faltan datos para enviar el correo' }), { status: 400 });
+    if (!name || !email || !fecha || !lugar || !nombreCancha || !capacidad || !propietarioEmail || !propietarioName) {
+      return new Response(JSON.stringify({ error: 'Faltan datos para enviar los correos' }), { status: 400 });
     }
 
-    const response = await resend.emails.send({
+    const responseCliente = await resend.emails.send({
       from: 'SportRent <sportrent@turismodelvallespa.com>',
       to: [email],  
       subject: 'Confirmación de Reserva',
       react: EmailTemplate({
-          name: name,
-          fecha,
-          lugar,
-          nombreCancha,
-          capacidad,
-          nombre: ''
+        name: name,
+        fecha,
+        lugar,
+        nombreCancha,
+        capacidad,
+        destinatario: 'cliente', 
       }), 
     });
 
-    console.log("Respuesta del servidor de Resend:", response);
-
-    if (response.error) {
-      console.log("Error al enviar el correo:", response.error);
-      return new Response(JSON.stringify({ error: response.error }), { status: 500 });
+    if (responseCliente.error) {
+      console.log("Error al enviar el correo al cliente:", responseCliente.error);
+      return new Response(JSON.stringify({ error: responseCliente.error }), { status: 500 });
     }
 
-    return new Response(JSON.stringify(response), { status: 200 });
+    const responsePropietario = await resend.emails.send({
+      from: 'SportRent <sportrent@turismodelvallespa.com>',
+      to: [propietarioEmail],  
+      subject: 'Nueva Reserva Confirmada',
+      react: EmailTemplate({
+        name: propietarioName,
+        fecha,
+        lugar,
+        nombreCancha,
+        capacidad,
+        destinatario: 'propietario',
+      }), 
+    });
+
+    if (responsePropietario.error) {
+      console.log("Error al enviar el correo al propietario:", responsePropietario.error);
+      return new Response(JSON.stringify({ error: responsePropietario.error }), { status: 500 });
+    }
+
+    return new Response(JSON.stringify({ success: true }), { status: 200 });
     
   } catch (error) {
-    console.log("Error inesperado al enviar el correo:", error);
-    return new Response(JSON.stringify({ error: 'Error inesperado al enviar el correo' }), { status: 500 });
+    console.log("Error inesperado al enviar los correos:", error);
+    return new Response(JSON.stringify({ error: 'Error inesperado al enviar los correos' }), { status: 500 });
   }
 }

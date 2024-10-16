@@ -20,6 +20,7 @@ export function ConfirmacionReservaComponent() {
   const [userId, setUserId] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null); 
   const [userFullName, setUserFullName] = useState<string | null>(null); 
+  const [propietarioEmail, setPropietarioEmail] = useState<string | null>(null); // Email del propietario
 
   const nombre = searchParams.get('nombre') || 'No especificado';
   const ubicacion = searchParams.get('ubicacion') || 'No especificado';
@@ -42,9 +43,42 @@ export function ConfirmacionReservaComponent() {
     }
   };
 
+  const obtenerEmailPropietario = async (canchaId: string) => {
+    const { data, error } = await supabase
+      .from('canchas')
+      .select('propietario_id')
+      .eq('id', canchaId)
+      .single();
+
+    if (error) {
+      console.error("Error obteniendo el propietario:", error);
+      setError("Error obteniendo el propietario de la cancha.");
+      return;
+    }
+
+    const propietarioId = data.propietario_id;
+
+    const { data: propietarioData, error: propietarioError } = await supabase
+      .from('auth.users')
+      .select('email')
+      .eq('id', propietarioId)
+      .single();
+
+    if (propietarioError) {
+      console.error("Error obteniendo el email del propietario:", propietarioError);
+      setError("Error obteniendo el email del propietario.");
+      return;
+    }
+
+    setPropietarioEmail(propietarioData.email);
+  };
+
   useEffect(() => {
     obtenerUsuario();
-  }, []);
+    if (canchaId) {
+      obtenerEmailPropietario(canchaId);
+    }
+  }, [canchaId]);
 
   const obtenerHoraActual = () => {
     return new Date();
@@ -81,7 +115,7 @@ export function ConfirmacionReservaComponent() {
       setSuccess(true);
 
       try {
-        const response = await fetch('/api/sendEmail', {
+        const responseUsuario = await fetch('/api/sendEmail', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -92,12 +126,35 @@ export function ConfirmacionReservaComponent() {
             fecha: fechaReserva.toISOString().split('T')[0], 
             lugar: ubicacion, 
             nombreCancha: nombre, 
-            capacidad: capacidad 
+            capacidad: capacidad,
+            tipoUsuario: 'cliente'  
           })
         });
 
-        if (!response.ok) {
-          console.error('Error al enviar el correo de confirmación');
+        if (propietarioEmail) {
+          const responsePropietario = await fetch('/api/sendEmail', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: userFullName,
+              email: propietarioEmail,
+              fecha: fechaReserva.toISOString().split('T')[0],
+              lugar: ubicacion,
+              nombreCancha: nombre,
+              capacidad: capacidad,
+              tipoUsuario: 'arrendador'  
+            })
+          });
+
+          if (!responsePropietario.ok) {
+            console.error('Error al enviar el correo al propietario');
+          }
+        }
+
+        if (!responseUsuario.ok) {
+          console.error('Error al enviar el correo de confirmación al usuario');
         }
       } catch (err) {
         console.error('Error en la solicitud de envío de correo:', err);

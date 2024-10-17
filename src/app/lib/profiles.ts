@@ -33,3 +33,24 @@ export const getUserFullName = async (userId: string) => {
 
   return null;
 };
+
+export const getOwnerFullName = async (ownerId: string) => {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("nombre, apellidos, user_type") 
+    .eq("id", ownerId)
+    .eq("user_type", "arrendador") 
+    .single();
+
+  if (error) {
+    console.error("Error al obtener el nombre y apellidos del propietario:", error);
+    return null;
+  }
+
+  if (data && data.user_type === "arrendador") {
+    return `${data.nombre} ${data.apellidos}`;
+  }
+
+  return null;
+};
+

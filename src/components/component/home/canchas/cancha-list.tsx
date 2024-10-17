@@ -6,11 +6,12 @@ import { useAuth } from "@/components/component/auth/AuthProvider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Toggle } from "@/components/ui/toggle";
-import { CalendarIcon, MapPinIcon, UsersIcon, Star } from "lucide-react";
+import { CalendarIcon, MapPinIcon, UsersIcon } from "lucide-react";
 import Image from "next/image";
-import { getCanchas } from "@/app/lib/canchas";
+import { getCanchas, getPromedioYTotalPuntuacion } from "@/app/lib/canchas";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Rating from '@mui/material/Rating'; 
 
 const tiposDeporte = ["futbol", "tenis", "basquet", "voley"];
 
@@ -47,7 +48,15 @@ export function CanchasDeportivas() {
     async function fetchData() {
       try {
         const canchaData = await getCanchas();
-        setCanchas(canchaData);
+  
+        const canchasConPuntuacion = await Promise.all(
+          canchaData.map(async (cancha: any) => {
+            const { promedio, total } = await getPromedioYTotalPuntuacion(cancha.id); 
+            return { ...cancha, puntuacionPromedio: promedio, total_puntuaciones: total };
+          })
+        );
+  
+        setCanchas(canchasConPuntuacion);
       } catch (err) {
         setError("Error al cargar los datos.");
         console.error(err);
@@ -168,12 +177,12 @@ export function CanchasDeportivas() {
               </CardHeader>
               <CardContent className="p-4">
                 <div className="flex items-center">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className={`h-5 w-5 ${star <= (cancha.puntuacion || 0) ? 'text-amarillo' : 'text-gray-300'}`}
-                    />
-                  ))}
+                  <Rating
+                    name={`rating-${cancha.id}`}
+                    value={cancha.puntuacionPromedio || 0} 
+                    precision={0.5}
+                    readOnly 
+                  />
                   <span className="ml-2 text-sm text-gray-600">({cancha.total_puntuaciones || 0} votos)</span>
                 </div>
                 <br />

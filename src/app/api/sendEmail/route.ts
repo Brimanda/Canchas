@@ -5,7 +5,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
-    const { name, email, fecha, lugar, nombreCancha, capacidad, propietarioEmail, propietarioName } = await request.json(); 
+    const { name, email, fecha, lugar, nombreCancha, capacidad, propietarioEmail, propietarioName, nameCliente  } = await request.json(); 
 
     if (!name || !email || !fecha || !lugar || !nombreCancha || !capacidad || !propietarioEmail || !propietarioName) {
       return new Response(JSON.stringify({ error: 'Faltan datos para enviar los correos' }), { status: 400 });
@@ -21,7 +21,8 @@ export async function POST(request: Request) {
         lugar,
         nombreCancha,
         capacidad,
-        destinatario: 'cliente', 
+        destinatario: 'cliente',
+        nameCliente 
       }), 
     });
 
@@ -41,6 +42,7 @@ export async function POST(request: Request) {
         nombreCancha,
         capacidad,
         destinatario: 'propietario',
+        nameCliente: name,
       }), 
     });
 

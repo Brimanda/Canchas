@@ -6,6 +6,7 @@ import WorksComponent from "./works";
 import Beneficios from "./beneficios";
 import PropertyTypes from "./descubre";
 import { HeroSectionComponent } from "./hero-section";
+import { OpinionesUsuariosCard } from "@/components/opiniones";
 
 
 const images = [
@@ -36,16 +37,27 @@ const Home = () => {
 
   return (
     <div>
-      <HeaderComponent/>
+      <HeaderComponent />
       {/* Carrito de Compras (Aun no) */}
-      <Hero/>
+      <Hero />
       <br />
       <br />
-
-      <WorksComponent/>
-      <PropertyTypes/>
-      <Beneficios/>
-      <HeroSectionComponent/>
+      <br />
+      <PropertyTypes />
+      <OpinionesUsuariosCard
+        courtName="Cancha Central Fútbol"
+        courtImage="https://sdhopbvwmexqitualize.supabase.co/storage/v1/object/public/canchas/0.004778225623510712-canchababy.jpg"
+        courtLocation="Buenos Aires, Argentina"
+        clientName="Carlos Rodríguez"
+        clientAvatar="https://sdhopbvwmexqitualize.supabase.co/storage/v1/object/public/canchas/0.004778225623510712-canchababy.jpg"
+        comment="Excelente cancha, el césped está en perfectas condiciones."
+        rating={5}
+      />
+      <br />
+      <br />
+      <HeroSectionComponent />
+      <WorksComponent />
+      <Beneficios />
       <br />
 
       <FooterComponent />

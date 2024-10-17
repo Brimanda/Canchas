@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/app/lib/supabase"; // Asegúrate de importar supabase correctamente
+import { supabase } from "@/app/lib/supabase"; 
 import { useRouter } from "next/navigation";
 
 export function ResetPassword() {

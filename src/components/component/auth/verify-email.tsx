@@ -8,7 +8,7 @@ export function VerifyEmail() {
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { resendVerificationEmail } = useAuth(); // Usar useAuth
+  const { resendVerificationEmail } = useAuth();
 
   const handleResendClick = async () => {
     setIsSending(true);
@@ -16,7 +16,6 @@ export function VerifyEmail() {
 
     try {
       await resendVerificationEmail();
-      // Puedes agregar aquí lógica para mostrar un mensaje de éxito al usuario
     } catch (error: any) {
       setError(error.message);
     }

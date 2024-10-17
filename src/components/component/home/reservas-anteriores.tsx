@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react';
+import { Rating } from '@mui/material';
 import { createClient } from '@supabase/supabase-js';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -9,16 +10,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { CalendarIcon, MapPinIcon, UsersIcon, SearchIcon, Star } from "lucide-react";
+import { CalendarIcon, MapPinIcon, UsersIcon, SearchIcon } from "lucide-react";
 import { motion } from "framer-motion";
 
 type Reserva = {
   id: string;
+  user_id: string; 
   fecha: string;
-  nombre_cancha: string, 
+  nombre_cancha: string,
   ubicacion: string;
   capacidad: number;
   estado: "confirmada" | "pendiente" | "cancelada";
+  puntuacion?: number;
+  comentario?: string;
 };
 
 const supabase = createClient(
@@ -38,16 +42,32 @@ export function ReservasAnteriores() {
 
   const obtenerReservas = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('reservas') 
-      .select('*');
-
-    if (error) {
-      console.error('Error al obtener reservas:', error);
-      setError('Ocurrió un error al cargar las reservas.');
-    } else {
-      setReservas(data as Reserva[]);
+    
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    if (userError) {
+      console.error('Error al obtener el usuario:', userError);
+      setError('Ocurrió un error al cargar el usuario.');
+      setLoading(false);
+      return;
     }
+  
+    if (user) {
+      const { data, error } = await supabase
+        .from('reservas')
+        .select('*')
+        .eq('user_id', user.id); 
+  
+      if (error) {
+        console.error('Error al obtener reservas:', error);
+        setError('Ocurrió un error al cargar las reservas.');
+      } else {
+        setReservas(data as Reserva[]);
+      }
+    } else {
+      setError('No hay usuario autenticado.');
+    }
+  
     setLoading(false);
   };
 
@@ -55,18 +75,28 @@ export function ReservasAnteriores() {
     obtenerReservas();
   }, []);
 
-  const filteredReservas = reservas.filter(reserva => 
+  const filteredReservas = reservas.filter(reserva =>
     (reserva.ubicacion?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     reserva.fecha.includes(searchTerm)) &&
+      reserva.fecha.includes(searchTerm)) &&
     (filterStatus === 'todas' || reserva.estado === filterStatus)
   );
 
   const handleRatingSubmit = async () => {
     if (selectedReserva) {
-      console.log(`Reserva ${selectedReserva.id} rated ${rating} stars. Comment: ${comment}`);
-      setRating(0);
-      setComment('');
-      setSelectedReserva(null);
+      const { error } = await supabase
+        .from('reservas')
+        .update({ puntuacion: rating, comentario: comment })
+        .eq('id', selectedReserva.id);
+
+      if (error) {
+        console.error('Error al actualizar la reserva:', error);
+      } else {
+        console.log(`Reserva ${selectedReserva.id} actualizada con ${rating} estrellas. Comentario: ${comment}`);
+        setRating(0);
+        setComment('');
+        setSelectedReserva(null);
+        obtenerReservas(); 
+      }
     }
   };
 
@@ -88,7 +118,7 @@ export function ReservasAnteriores() {
         >
           <h1 className="text-3xl font-extrabold text-sky-900 text-center mb-8">Mis Reservas Anteriores</h1>
         </motion.div>
-        
+
         <div className="bg-white shadow-xl rounded-lg overflow-hidden">
           <div className="p-6">
             <div className="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0 sm:space-x-4">
@@ -114,7 +144,7 @@ export function ReservasAnteriores() {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="overflow-x-auto">
               <Table>
                 <TableCaption>Total de reservas: {filteredReservas.length}</TableCaption>
@@ -168,8 +198,8 @@ export function ReservasAnteriores() {
                       <TableCell className="text-right">
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button 
-                              variant="outline" 
+                            <Button
+                              variant="outline"
                               size="sm"
                               onClick={() => setSelectedReserva(reserva)}
                             >
@@ -181,23 +211,28 @@ export function ReservasAnteriores() {
                               <DialogTitle>Puntuar Reserva</DialogTitle>
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
-                              <div className="flex items-center justify-center space-x-2">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                  <Star
-                                    key={star}
-                                    className={`h-8 w-8 cursor-pointer ${
-                                      star <= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                                    }`}
-                                    onClick={() => setRating(star)}
-                                  />
-                                ))}
+                              <div className="flex items-center justify-center">
+                                <Rating
+                                  name="simple-controlled"
+                                  value={rating}
+                                  onChange={(event, newValue) => {
+                                    setRating(newValue || 0);
+                                  }}
+                                />
                               </div>
                               <Textarea
-                                placeholder="Deja un comentario sobre tu experiencia..."
+                                placeholder="Escribe un comentario..."
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
                               />
-                              <Button onClick={handleRatingSubmit}>Enviar Puntuación</Button>
+                            </div>
+                            <div className="flex justify-end">
+                              <Button
+                                onClick={handleRatingSubmit}
+                                className="w-full"
+                              >
+                                Enviar
+                              </Button>
                             </div>
                           </DialogContent>
                         </Dialog>
@@ -216,13 +251,13 @@ export function ReservasAnteriores() {
 
 const getBadgeColor = (estado: Reserva['estado']) => {
   switch (estado) {
-    case "confirmada":
-      return "bg-green-500";
-    case "pendiente":
-      return "bg-yellow-500";
-    case "cancelada":
-      return "bg-red-500";
+    case 'confirmada':
+      return 'bg-green-600';
+    case 'pendiente':
+      return 'bg-yellow-600';
+    case 'cancelada':
+      return 'bg-red-600';
     default:
-      return "bg-gray-500";
+      return 'bg-gray-600';
   }
-}
+};

@@ -6,7 +6,7 @@ import { supabase } from "@/app/lib/supabase";
 interface AuthContextType {
   session: Session | null;
   isLoading: boolean;
-  userType: string | null; // Agregamos userType aquí
+  userType: string | null; 
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, username: string, nombre: string, apellidos: string, userType: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -16,7 +16,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>( {
   session: null,
   isLoading: true,
-  userType: null, // Inicializar como null
+  userType: null, 
   signIn: async () => {},
   signUp: async () => {},
   signOut: async () => {},
@@ -26,13 +26,13 @@ const AuthContext = createContext<AuthContextType>( {
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [userType, setUserType] = useState<string | null>(null); // Estado para userType
+  const [userType, setUserType] = useState<string | null>(null); 
 
   useEffect(() => {
     const fetchSession = async () => {
       const { data } = await supabase.auth.getSession();
       setSession(data.session);
-      setUserType(data.session?.user?.user_metadata?.user_type || null); // Establecer userType desde los metadatos
+      setUserType(data.session?.user?.user_metadata?.user_type || null); 
       setIsLoading(false);
     };
 
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const { data: { subscription }} = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
       setSession(session);
-      setUserType(session?.user?.user_metadata?.user_type || null); // Actualizar userType cuando cambia la sesión
+      setUserType(session?.user?.user_metadata?.user_type || null); 
     });
 
     return () => subscription.unsubscribe();
@@ -111,7 +111,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         session,
         isLoading,
-        userType, // Proveer userType
+        userType, 
         signIn,
         signUp,
         signOut,

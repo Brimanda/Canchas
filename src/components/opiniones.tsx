@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -72,26 +70,34 @@ export default function OpinionesCard() {
 
   const fetchReviews = async () => {
     try {
-      const { data, error } = await supabase.rpc('fetch_reviews');
+      const { data, error } = await supabase
+        .from('reservas')
+        .select(`
+          nombre_cancha,
+          ubicacion,
+          comentario,
+          puntuacion,
+          user_id,
+          canchas (imagen),
+          profiles (nombre, apellidos)
+        `)
+        .eq('estado', 'confirmada'); 
 
-      // Comprobamos si hay un error
       if (error) {
         console.error('Error fetching reviews:', error);
-        return; // Salimos de la función si hay error
+        return; 
       }
 
-      // Aseguramos que `data` no sea null o undefined
       if (!data || data.length === 0) {
         console.log('No se encontraron reseñas.');
-        return; // Salimos de la función si no hay datos
+        return; 
       }
 
-      // Mapeamos los datos recibidos
       const formattedData = data.map((reserva: any) => ({
         courtName: reserva.nombre_cancha || 'Nombre de cancha no disponible',
-        courtImage: reserva.imagen || "/placeholder.svg",
+        courtImage: reserva.canchas?.imagen || "/placeholder.svg",
         courtLocation: reserva.ubicacion || 'Ubicación no disponible',
-        clientName: reserva.nombre || 'Usuario desconocido',
+        clientName: `${reserva.profiles?.nombre || 'Usuario desconocido'} ${reserva.profiles?.apellidos || ''}`.trim(),
         comment: reserva.comentario || 'Comentario no disponible',
         rating: reserva.puntuacion || 0,
       }));
